@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XDan's Bio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <img src="uploads/profile.jpg" alt="Profile Picture" class="profile-pic">
+        <h1>XDan</h1>
+        <p class="bio">South African/British Music Producer.</p>
+        <div class="profile-views">
+            <span>𖠂 You've viewed my profile <span id="view-count">0</span> times!</span>
+        </div>
+
+        <!-- Now Playing bar - positioned below bio -->
+        <div class="now-playing">
+            <img src="uploads/art.jpeg" alt="Album Art" class="album-art">
+            <div class="now-playing-info">
+                <p class="now-playing-text">Now Playing</p>
+                <p class="song-title">Synthwavy</p>
+                <p class="artist-name">by XDan</p>
+            </div>
+            <div class="controls">
+                <span id="current-time">0:00</span> <!-- Current time display -->
+                <button id="play-pause">&#10074;&#10074;</button>
+                <input type="range" id="progress-bar" min="0" max="100" value="0">
+                <span id="duration-time">0:00</span> <!-- Duration time display -->
+                <button id="mute">&#128266;</button>
+                <input type="range" id="volume-slider" min="0" max="100" value="100">
+            </div>
+                                   
+        </div>
+
+        <div class="links">
+            <div class="link-box">
+                <img src="uploads/icon1.png" alt="My Website Icon">
+                <a href="https://xdan.co.uk" target="_blank">My Website</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon2.png" alt="Discord Server Icon">
+                <a href="https://discord.gg/5rSDcZvJAf" target="_blank">Discord Server - XDan's MrBeast Collab</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon3.png" alt="YouTube Icon">
+                <a href="https://youtube.com/@_XDan" target="_blank">YouTube - @_XDan</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon4.png" alt="YouTube Music Icon">
+                <a href="https://music.youtube.com/channel/UCyuot85YYAyEiQi51iZbW6Q" target="_blank">YouTube Music - Artist</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon5.png" alt="Spotify Icon">
+                <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank">Spotify - Artist</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon6.png" alt="SoundCloud Icon">
+                <a href="https://soundcloud.com/xdanfr" target="_blank">SoundCloud - /xdanfr</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon7.png" alt="Instagram Icon">
+                <a href="https://instagram.com/yourfav.dan" target="_blank">Instagram - @yourfav.dan</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon8.png" alt="TikTok Icon">
+                <a href="https://tiktok.com/@xdanfr" target="_blank">TikTok - @xdanfr</a>
+            </div>
+            <div class="link-box">
+                <img src="uploads/icon9.png" alt="Discord Icon">
+                <span id="discord-username" class="copyable">Discord - _xdan</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-message" id="copy-message">Copied username to clipboard!</div>
+
+    <audio id="background-audio" autoplay loop>
+        <source src="uploads/background-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio tag.
+    </audio>
+    
+    <script src="script.js"></script>
+    
+</body>
+</html>
