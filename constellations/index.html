@@ -1,0 +1,155 @@
+<html><head><base href="." />
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+}
+canvas {
+    display: block;
+}
+.instructions {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    color: rgba(255,255,255,0.5);
+    font-family: Arial, sans-serif;
+}
+</style>
+<title>XDan - Constellations</title>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+// Set canvas size
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Particle class
+class Particle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.5;
+        this.vy = (Math.random() - 0.5) * 0.5;
+        this.radius = 2;
+    }
+
+    update(mouseX, mouseY) {
+        // Move away from mouse
+        const dx = this.x - mouseX;
+        const dy = this.y - mouseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+            this.x += dx / dist * 2;
+            this.y += dy / dist * 2;
+        }
+
+        // Regular movement
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Bounce off walls
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+    }
+
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.fill();
+    }
+}
+
+// Create particles
+const particles = [];
+const numParticles = 100;
+for (let i = 0; i < numParticles; i++) {
+    particles.push(new Particle());
+}
+
+// Mouse position
+let mouseX = 0;
+let mouseY = 0;
+canvas.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+// Draw mouse glow
+function drawMouseGlow() {
+    const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 100);
+    gradient.addColorStop(0, 'rgba(128, 0, 255, 0.2)');
+    gradient.addColorStop(1, 'rgba(128, 0, 255, 0)');
+    
+    ctx.beginPath();
+    ctx.arc(mouseX, mouseY, 100, 0, Math.PI * 2);
+    ctx.fillStyle = gradient;
+    ctx.fill();
+}
+
+function drawConnections() {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < 150) {
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+
+                // Draw diagonal lines between connections
+                if (j < particles.length - 1) {
+                    const nextParticle = particles[j + 1];
+                    const d2 = Math.sqrt(
+                        (particles[i].x - nextParticle.x) ** 2 + 
+                        (particles[i].y - nextParticle.y) ** 2
+                    );
+                    if (d2 < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[j].x, particles[j].y);
+                        ctx.lineTo(nextParticle.x, nextParticle.y);
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+    }
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw mouse glow
+    drawMouseGlow();
+
+    // Update and draw particles
+    particles.forEach(particle => {
+        particle.update(mouseX, mouseY);
+        particle.draw();
+    });
+
+    // Draw connections
+    drawConnections();
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body></html>
