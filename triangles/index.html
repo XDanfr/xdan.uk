@@ -1,0 +1,352 @@
+<html><head><base href="." /></head>
+<body style="margin:0; overflow:hidden; background:#111;">
+
+<div id="menu" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; color:white; font-family:Arial;">
+  <h1 style="font-size:3em; margin-bottom:1em; text-shadow:0 0 10px #fff;">Triangle Physics</h1>
+<p style="margin-bottom:2em; font-size:1.2em; opacity:0.8;"><a href="https://xdan.uk" style="color:white; text-decoration:none;">By XDan</a></p>
+<div style="display:flex; gap:20px; justify-content:center;">
+    <button onclick="startGamemode('zen')" style="padding:15px 30px; font-size:1.2em; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:10px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(5px);">
+      Zen Mode
+      <div style="font-size:0.8em; opacity:0.8;">Relaxing triangle physics</div>
+    </button>
+    <button onclick="startGamemode('create')" style="padding:15px 30px; font-size:1.2em; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:10px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(5px);">
+      Create Mode
+      <div style="font-size:0.8em; opacity:0.8;">Customize your experience</div>
+    </button>
+    <button onclick="startGamemode('standard')" style="padding:15px 30px; font-size:1.2em; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:10px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(5px);">
+      Standard Mode
+      <div style="font-size:0.8em; opacity:0.8;">30 second challenge</div>
+    </button>
+  </div>
+</div>
+
+<button id="backButton" onclick="returnToMenu()" style="display:none; position:fixed; top:10px; left:10px; padding:10px 20px; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:5px; cursor:pointer; font-family:Arial; z-index:1000;">Back to Menu</button>
+
+<button id="refreshButton" onclick="refreshTriangles()" style="display:none; position:fixed; top:10px; left:120px; padding:10px 20px; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:5px; cursor:pointer; font-family:Arial; z-index:1000;">Refresh Triangles</button>
+
+<div id="gameUI" style="display:none; position:absolute; top:10px; right:10px; color:white; font-family:Arial;">
+  <div id="timer" style="font-size:1.5em; margin-bottom:10px; text-align:right;"></div>
+  <div id="score" style="font-size:1.5em; text-align:right;"></div>
+</div>
+
+<div id="createUI" style="display:none; position:absolute; top:10px; right:10px; color:white; font-family:Arial; background:rgba(0,0,0,0.5); padding:15px; border-radius:10px;">
+  <div style="margin-bottom:10px;">
+    <label>Number of Triangles: </label>
+    <input type="range" id="triangleCount" min="1" max="100" value="30" style="width:100px;">
+    <span id="triangleCountValue">30</span>
+  </div>
+</div>
+
+<script>
+let maxShapes = 30; // Moved to top of script
+
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+let mouse = {x: width/2, y: height/2, hue: 0};
+let shapes = [];
+let initialSpawn = true;
+
+class Shape {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 20 + 10;
+    this.color = `hsl(${Math.random()*360}, 70%, 60%)`;
+    this.vx = 0;
+    this.vy = 0;
+    this.rotation = 0;
+    this.rotationSpeed = 0;
+    this.friction = 0.95;
+    this.opacity = 0; // Start with 0 opacity
+    this.fadeSpeed = 0.01;
+    this.shouldRemove = false;
+    this.mass = this.size * this.size;
+    this.spawning = true; // New property to track spawn state
+  }
+
+  checkCollision(other) {
+    const dx = this.x - other.x;
+    const dy = this.y - other.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return distance < (this.size + other.size);
+  }
+
+  resolveCollision(other) {
+    const dx = other.x - this.x;
+    const dy = other.y - this.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Normal vector
+    const nx = dx / distance;
+    const ny = dy / distance;
+    
+    // Relative velocity
+    const vx = this.vx - other.vx;
+    const vy = this.vy - other.vy;
+    
+    // Relative velocity in normal direction
+    const relativeVelocity = vx * nx + vy * ny;
+    
+    // Don't resolve if objects are moving apart
+    if (relativeVelocity > 0) return;
+    
+    // Elastic collision impulse
+    const restitution = 0.8;
+    const impulse = -(1 + restitution) * relativeVelocity;
+    const j = impulse / (1/this.mass + 1/other.mass);
+    
+    // Update velocities
+    this.vx -= (j * nx) / this.mass;
+    this.vy -= (j * ny) / this.mass;
+    other.vx += (j * nx) / other.mass;
+    other.vy += (j * ny) / other.mass;
+    
+    // Update rotation based on collision
+    this.rotationSpeed += (Math.atan2(this.vy, this.vx) * 0.1);
+    other.rotationSpeed += (Math.atan2(other.vy, other.vx) * 0.1);
+  }
+
+  update() {
+    // Handle spawn fade in
+    if (this.spawning) {
+      this.opacity += 0.02;
+      if (this.opacity >= 1) {
+        this.opacity = 1;
+        this.spawning = false;
+      }
+    }
+
+    let dx = this.x - mouse.x;
+    let dy = this.y - mouse.y;
+    let dist = Math.sqrt(dx * dx + dy * dy);
+    
+    if (dist < 100) {
+      let force = (100 - dist) * 0.2;
+      this.vx += (dx / dist) * force;
+      this.vy += (dy / dist) * force;
+      
+      this.rotationSpeed = (Math.atan2(this.vy, this.vx) * 0.1);
+    }
+
+    // Check collisions with other shapes
+    for (let other of shapes) {
+      if (other === this) continue;
+      if (this.checkCollision(other)) {
+        this.resolveCollision(other);
+      }
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= this.friction;
+    this.vy *= this.friction;
+    
+    this.rotation += this.rotationSpeed;
+    this.rotationSpeed *= 0.95;
+
+    if (this.x < -this.size || this.x > width + this.size || 
+        this.y < -this.size || this.y > height + this.size) {
+      this.opacity -= this.fadeSpeed * 2;
+    }
+
+    if (!this.spawning && Math.random() < 0.001) {
+      this.opacity -= this.fadeSpeed;
+    }
+
+    if (this.opacity <= 0) {
+      this.shouldRemove = true;
+      if (gamemode === 'standard') {
+        score++;
+        document.getElementById('score').textContent = `Score: ${score}`;
+      }
+    }
+  }
+
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    
+    for (let g = 0; g < 3; g++) {
+      ctx.beginPath();
+      ctx.moveTo(this.size * Math.cos(0), this.size * Math.sin(0));
+      for (let i = 1; i <= 3; i++) {
+        let angle = (i * 2 * Math.PI / 3);
+        ctx.lineTo(this.size * Math.cos(angle), this.size * Math.sin(angle));
+      }
+      ctx.strokeStyle = this.color.replace(')', `,${this.opacity * (1 - g * 0.2)})`);
+      ctx.lineWidth = 2 + g;
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 20 + g * 5;
+      ctx.stroke();
+    }
+    
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+}
+
+function trySpawnShape() {
+  if (shapes.length >= maxShapes) return;
+  
+  let attempts = 0;
+  const maxAttempts = 100;
+  
+  while (attempts < maxAttempts) {
+    const newX = Math.random() * width;
+    const newY = Math.random() * height;
+    const newShape = new Shape(newX, newY);
+    
+    let canSpawn = true;
+    for (let shape of shapes) {
+      if (newShape.checkCollision(shape)) {
+        canSpawn = false;
+        break;
+      }
+    }
+    
+    if (canSpawn) {
+      shapes.push(newShape);
+      return true;
+    }
+    
+    attempts++;
+  }
+  
+  return false;
+}
+
+function initialSpawnShapes() {
+  if (shapes.length < maxShapes && initialSpawn) {
+    for (let i = 0; i < 5; i++) {
+      trySpawnShape();
+    }
+    if (shapes.length < maxShapes) {
+      requestAnimationFrame(initialSpawnShapes);
+    } else {
+      initialSpawn = false;
+    }
+  }
+}
+
+initialSpawnShapes();
+
+let gamemode = null;
+let gameTimer = 0;
+let score = 0;
+
+function startGamemode(mode) {
+  gamemode = mode;
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('backButton').style.display = 'block';
+  shapes = [];
+  score = 0;
+  
+  if (mode === 'standard') {
+    document.getElementById('gameUI').style.display = 'block';
+    document.getElementById('createUI').style.display = 'none';
+    document.getElementById('refreshButton').style.display = 'none';
+    gameTimer = 30;
+    updateTimer();
+    maxShapes = 30;
+  } else if (mode === 'create') {
+    document.getElementById('createUI').style.display = 'block';
+    document.getElementById('gameUI').style.display = 'none';
+    document.getElementById('refreshButton').style.display = 'block';
+    maxShapes = parseInt(document.getElementById('triangleCount').value);
+  } else {
+    document.getElementById('gameUI').style.display = 'none';
+    document.getElementById('createUI').style.display = 'none';
+    document.getElementById('refreshButton').style.display = 'block';
+    maxShapes = 30;
+  }
+  
+  initialSpawn = true;
+  initialSpawnShapes();
+}
+
+function returnToMenu() {
+  gamemode = null;
+  document.getElementById('menu').style.display = 'block';
+  document.getElementById('gameUI').style.display = 'none';
+  document.getElementById('createUI').style.display = 'none';
+  document.getElementById('backButton').style.display = 'none';
+  document.getElementById('refreshButton').style.display = 'none';
+}
+
+function refreshTriangles() {
+  shapes = [];
+  initialSpawn = true;
+  initialSpawnShapes();
+}
+
+function updateTimer() {
+  if (gamemode === 'standard' && gameTimer > 0) {
+    gameTimer -= 1/60;
+    document.getElementById('timer').textContent = `Time: ${Math.ceil(gameTimer)}s`;
+    if (gameTimer <= 0) {
+      alert(`Game Over! Score: ${score}`);
+      returnToMenu();
+    }
+  }
+}
+
+document.getElementById('triangleCount').addEventListener('input', function() {
+  const value = parseInt(this.value);
+  document.getElementById('triangleCountValue').textContent = value;
+  maxShapes = value;
+  shapes = shapes.slice(0, value);
+});
+
+function animate() {
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, width, height);
+
+  mouse.hue = (mouse.hue + 0.5) % 360;
+  
+  for (let i = 0; i < 8; i++) {
+    ctx.beginPath();
+    ctx.arc(mouse.x, mouse.y, 50 - i * 2, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${mouse.hue + i * 30}, 70%, 60%, ${0.2 - i * 0.02})`;
+    ctx.shadowColor = `hsl(${mouse.hue + i * 30}, 70%, 60%)`;
+    ctx.shadowBlur = 40 + i * 5;
+    ctx.fill();
+  }
+  ctx.shadowBlur = 0;
+
+  updateTimer();
+  
+  shapes = shapes.filter(shape => !shape.shouldRemove);
+  
+  while (shapes.length < maxShapes) {
+    trySpawnShape();
+  }
+  
+  shapes.forEach(shape => {
+    shape.update();
+    shape.draw();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('mousemove', (e) => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+});
+
+window.addEventListener('resize', () => {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+});
+
+animate();
+</script>
+
+</body></html>
