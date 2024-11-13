@@ -4,38 +4,134 @@
     <base href="." />
     <meta property="og:title" content="Triangles" />
     <meta property="og:description" content="An experiment by XDan." />
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #111;
+        }
+        #menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            font-family: Arial;
+        }
+        #menu h1 {
+            font-size: 3em;
+            margin-bottom: 1em;
+            text-shadow: 0 0 10px #fff;
+        }
+        #menu p {
+            margin-bottom: 2em;
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        #menu a {
+            color: white;
+            text-decoration: none;
+        }
+        #menu button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        #menu button div {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        #backButton, #refreshButton {
+            display: none;
+            position: fixed;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid white;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: Arial;
+            z-index: 1000;
+        }
+        #backButton {
+            top: 10px;
+            left: 10px;
+        }
+        #refreshButton {
+            top: 10px;
+            left: 120px;
+        }
+        #gameUI, #createUI {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-family: Arial;
+        }
+        #createUI {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            #menu h1 {
+                font-size: 2em;
+            }
+            #menu p {
+                font-size: 1em;
+            }
+            #menu button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+            #menu button div {
+                font-size: 0.7em;
+            }
+            #backButton, #refreshButton {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
 </head>
-<body style="margin:0; overflow:hidden; background:#111;">
+<body>
 
-<div id="menu" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; color:white; font-family:Arial;">
-    <h1 style="font-size:3em; margin-bottom:1em; text-shadow:0 0 10px #fff;">Triangle Physics</h1>
-    <p style="margin-bottom:2em; font-size:1.2em; opacity:0.8;"><a href="https://xdan.uk" style="color:white; text-decoration:none;">By XDan</a></p>
-    <div style="display:flex; gap:20px; justify-content:center;"></div>
-        <button onclick="startGamemode('zen')" style="padding:15px 30px; font-size:1.2em; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:10px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(5px);">
+<div id="menu">
+    <h1>Triangle Physics</h1>
+    <p><a href="https://xdan.uk">By XDan</a></p>
+    <div style="display:flex; gap:20px; justify-content:center;">
+        <button onclick="startGamemode('zen')">
             Zen Mode
-            <div style="font-size:0.8em; opacity:0.8;">Relaxing triangle physics</div>
+            <div>Relaxing triangle physics</div>
         </button>
-        <button onclick="startGamemode('create')" style="padding:15px 30px; font-size:1.2em; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:10px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(5px);">
+        <button onclick="startGamemode('create')">
             Create Mode
-            <div style="font-size:0.8em; opacity:0.8;">Customize your experience</div>
+            <div>Customize your experience</div>
         </button>
-        <button onclick="startGamemode('standard')" style="padding:15px 30px; font-size:1.2em; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:10px; cursor:pointer; transition:all 0.3s; backdrop-filter:blur(5px);">
+        <button onclick="startGamemode('standard')">
             Standard Mode
-            <div style="font-size:0.8em; opacity:0.8;">30 second challenge</div>
+            <div>30 second challenge</div>
         </button>
     </div>
 </div>
 
-<button id="backButton" onclick="returnToMenu()" style="display:none; position:fixed; top:10px; left:10px; padding:10px 20px; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:5px; cursor:pointer; font-family:Arial; z-index:1000;">Back to Menu</button>
+<button id="backButton" onclick="returnToMenu()">Back to Menu</button>
+<button id="refreshButton" onclick="refreshTriangles()">Refresh Triangles</button>
 
-<button id="refreshButton" onclick="refreshTriangles()" style="display:none; position:fixed; top:10px; left:120px; padding:10px 20px; background:rgba(255,255,255,0.1); border:2px solid white; color:white; border-radius:5px; cursor:pointer; font-family:Arial; z-index:1000;">Refresh Triangles</button>
-
-<div id="gameUI" style="display:none; position:absolute; top:10px; right:10px; color:white; font-family:Arial;">
+<div id="gameUI">
     <div id="timer" style="font-size:1.5em; margin-bottom:10px; text-align:right;"></div>
     <div id="score" style="font-size:1.5em; text-align:right;"></div>
 </div>
 
-<div id="createUI" style="display:none; position:absolute; top:10px; right:10px; color:white; font-family:Arial; background:rgba(0,0,0,0.5); padding:15px; border-radius:10px;">
+<div id="createUI">
     <div style="margin-bottom:10px;">
         <label>Number of Triangles: </label>
         <input type="range" id="triangleCount" min="1" max="100" value="30" style="width:100px;">
@@ -347,6 +443,11 @@ window.addEventListener('mousemove', (e) => {
     mouse.y = e.clientY;
 });
 
+window.addEventListener('touchmove', (e) => {
+    mouse.x = e.touches[0].clientX;
+    mouse.y = e.touches[0].clientY;
+});
+
 window.addEventListener('resize', () => {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
@@ -360,6 +461,35 @@ animate();
         <img src="uploads/logo.png" alt="XDan Logo" style="width:50px; height:50px;">
     </a>
 </div>
-</div>
 </body>
 </html>
+<script>
+document.getElementById('triangleCount').max = 1000;
+document.getElementById('triangleCount').style.width = '200px';
+
+document.getElementById('triangleCount').addEventListener('input', function() {
+    const value = parseInt(this.value);
+    document.getElementById('triangleCountValue').textContent = value;
+    maxShapes = value;
+    shapes = shapes.slice(0, value);
+
+    const warning = document.getElementById('warning');
+    if (value > 100) {
+        if (!warning) {
+            const warningDiv = document.createElement('div');
+            warningDiv.id = 'warning';
+            warningDiv.style.color = 'red';
+            warningDiv.style.position = 'fixed';
+            warningDiv.style.bottom = '10px';
+            warningDiv.style.left = '50%';
+            warningDiv.style.transform = 'translateX(-50%)';
+            warningDiv.textContent = '⚠️ Any value above 100 may be unstable. Proceed at your own risk.';
+            document.body.appendChild(warningDiv);
+        }
+    } else {
+        if (warning) {
+            warning.remove();
+        }
+    }
+});
+</script>
