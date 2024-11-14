@@ -5,159 +5,321 @@
     <meta property="og:title" content="DOWNLOAD MORE RAM 🤑🤑" />
     <meta property="og:description" content="GET SPEEDY FAST 🤑🤑🤑🤑🤑🤑" />
 <style>
-  body {
-    background-color: #000080;
-    color: #00ff00;
-    font-family: 'VT323', monospace;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-  }
-
-  .container {
-    background-color: #000040;
-    border: 2px solid #00ff00;
-    padding: 20px;
-    max-width: 600px;
-    width: 90%;
-  }
-
-  h1 {
-    color: #ffff00;
-    text-shadow: 2px 2px #008000;
-  }
-
-  .download-btn {
-    background-color: #008000;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-    font-family: 'VT323', monospace;
-    margin: 20px 0;
-  }
-
-  .download-btn:hover {
-    background-color: #00ff00;
-    color: #000000;
-  }
-
-  #progress-container {
-    width: 100%;
-    background-color: #333;
-    display: none;
-    margin-top: 20px;
-  }
-
-  #progress-bar {
-    width: 0%;
-    height: 20px;
-    background-color: #00ff00;
-    transition: width 0.5s;
-  }
-
-  #status-text {
-    margin-top: 10px;
-    min-height: 20px;
-  }
-
-  .blink {
-    animation: blink 1s step-end infinite;
-  }
-
-  @keyframes blink {
-    50% { opacity: 0; }
-  }
-
-  .virus {
-    color: #ff0000;
-    animation: virus 0.5s infinite;
-    display: none;
-  }
-
-  @keyframes virus {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-</style></head><body>
-<div class="container">
-  <h1>⚡ DOWNLOAD MORE RAM! ⚡</h1>
-  <h2>FREE RAM DOWNLOAD - NO VIRUS!</h2>
-  <div>
-    <marquee>🔥 SUPER FAST DOWNLOAD - 100% LEGIT - NO SCAM 🔥</marquee>
-  </div>
-  <p>Current RAM: 4GB</p>
-  <p>After download: 999GB</p>
-  <div class="description">
-    <p>Why download more RAM? 🤑 Because more RAM = more POWER! 🤑</p>
-    <p>With our revolutionary RAM downloading technology, you can: </p>
-    <ul style="text-align: left;">
-      <li>🤑 Run 100 Chrome tabs without crashing!</li>
-      <li>🤑 Play ALL the games at MAXIMUM settings!</li>
-      <li>🤑 Never see the spinning wheel of death again!</li>
-      <li>🤑 Become a professional gamer overnight!</li>
-      <li>🤑 Make your computer faster than NASA's supercomputers!</li>
-    </ul>
-    <p>Don't wait! Download NOW and join millions of satisfied customers! 🤑</p>
-    <p><small>Want to learn more about how this revolutionary RAM downloading process works? Click <a href="https://xdan.uk/rr" style="color: #00ff00;">here</a>!</small></p>
-  </div>
-  <button class="download-btn" onclick="startDownload()">DOWNLOAD NOW!</button>
-  <div id="progress-container">
-    <div id="progress-bar"></div>
-  </div>
-  <div id="status-text"></div>
-  <div class="virus" id="virus-text">⚠️ VIRUS DETECTED! Just kidding... 😈</div>
-</div>
-
-<script>
-const messages = [
-  "Initializing RAM download sequence...",
-  "Hacking the mainframe...",
-  "Downloading more gigabytes...",
-  "Converting watts to gigabytes...",
-  "Playing Minecraft while waiting...",
-  "Downloading more internet...",
-  "Making computer go brrrrr...",
-  "Downloading RGB lighting for extra speed...",
-  "Reticulating splines...",
-  "Almost there (maybe)..."
-];
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function startDownload() {
-  const progressContainer = document.getElementById('progress-container');
-  const progressBar = document.getElementById('progress-bar');
-  const statusText = document.getElementById('status-text');
-  const virusText = document.getElementById('virus-text');
-  const downloadBtn = document.querySelector('.download-btn');
-  
-  downloadBtn.disabled = true;
-  progressContainer.style.display = 'block';
-  
-  for (let i = 0; i <= 100; i += 10) {
-    progressBar.style.width = i + '%';
-    statusText.textContent = messages[Math.floor(i/10)] + ' ' + i + '%';
+    <style>
+      body {
+        background-color: #000080;
+        color: #00ff00;
+        font-family: 'VT323', monospace;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
     
-    if (i === 50) {
-      virusText.style.display = 'block';
-      await sleep(1000);
-      virusText.style.display = 'none';
+      .container {
+        background-color: #000040;
+        border: 2px solid #00ff00;
+        padding: 20px;
+        max-width: 600px;
+        width: 90%;
+      }
+    
+      h1 {
+        color: #ffff00;
+        text-shadow: 2px 2px #008000;
+      }
+    
+      .download-btn {
+        background-color: #008000;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        font-family: 'VT323', monospace;
+        margin: 20px 0;
+      }
+    
+      .download-btn:hover {
+        background-color: #00ff00;
+        color: #000000;
+      }
+    
+      .ram-image {
+        width: 200px;
+        height: auto;
+        margin: 10px;
+        filter: drop-shadow(0 0 5px #00ff00);
+      }
+    
+      .ram-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+    
+      .download-icon {
+        width: 50px;
+        height: 50px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+    
+      #progress-container {
+        width: 100%;
+        background-color: #333;
+        display: none;
+        margin-top: 20px;
+      }
+    
+      #progress-bar {
+        width: 0%;
+        height: 20px;
+        background-color: #00ff00;
+        transition: width 0.5s;
+      }
+    
+      #progress-bar.error {
+        background-color: #ff0000;
+        animation: pulse 1s infinite;
+      }
+    
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+      }
+    
+      #status-text {
+        margin-top: 10px;
+        min-height: 20px;
+      }
+    
+      .blink {
+        animation: blink 1s step-end infinite;
+      }
+    
+      @keyframes blink {
+        50% { opacity: 0; }
+      }
+    
+      .virus {
+        color: #ff0000;
+        animation: virus 0.5s infinite;
+        display: none;
+      }
+    
+      @keyframes virus {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+    
+      .verification-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #000040;
+        border: 2px solid #00ff00;
+        padding: 20px;
+        z-index: 100;
+        text-align: center;
+      }
+    
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 99;
+      }
+    
+      .spinner {
+        display: none;
+        width: 40px;
+        height: 40px;
+        border: 4px solid #00ff00;
+        border-top: 4px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 10px auto;
+      }
+    
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    
+      .verify-btn {
+        background-color: #008000;
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        font-family: 'VT323', monospace;
+        margin: 10px 0;
+      }
+    
+      .verify-btn:hover {
+        background-color: #00ff00;
+        color: #000000;
+      }
+    
+      .error-text {
+        color: #ff0000;
+        font-weight: bold;
+        font-size: 1.2em;
+        animation: shake 0.5s;
+      }
+    
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+      }
+    </style></head><body>
+    <div class="container">
+      <h1>⚡ DOWNLOAD MORE RAM! ⚡</h1>
+      <h2>FREE RAM DOWNLOAD - NO VIRUS!</h2>
+      <div>
+        <marquee>🔥 SUPER FAST DOWNLOAD - 100% LEGIT - NO SCAM 🔥</marquee>
+      </div>
+      <div class="ram-container">
+        <img class="ram-image" src="/a/fdfbfd5d-df9e-46f4-a001-872d95f8ec1d" alt="Computer RAM module on white background" width="200">
+        <img class="ram-image" src="/a/b8a93f5d-2a78-4a7d-936c-214076f3a65f" alt="DDR4 RAM module" width="200">
+        <img class="ram-image" src="/a/c5561ba9-65a9-4f73-b684-df4def9c2eb5" alt="RAM stick with heatsink" width="200">
+      </div>
+      <img src="/a/9b597293-65c2-413e-883d-051bde84e9fb" alt="YouTube thumbnail showing computer performance" width="320" height="180" style="margin: 10px;">
+      <p>Current RAM: 4GB</p>
+      <p>After download: 999GB</p>
+      <div class="description">
+        <p>Why download more RAM? 🤑 Because more RAM = more POWER! 🤑</p>
+        <p>With our revolutionary RAM downloading technology, you can: </p>
+        <ul style="text-align: left;">
+          <li>🤑 Run 100 Chrome tabs without crashing!</li>
+          <li>🤑 Play ALL the games at MAXIMUM settings!</li>
+          <li>🤑 Never see the spinning wheel of death again!</li>
+          <li>🤑 Become a professional gamer overnight!</li>
+          <li>🤑 Make your computer faster than NASA's supercomputers!</li>
+        </ul>
+        <div style="display: flex; justify-content: center; margin: 20px 0;">
+          <img src="/a/e963f15e-40fd-46be-9445-3101cf77991e" alt="Download button with hand cursor" width="150" height="50" style="cursor: pointer;" onclick="startDownload()">
+        </div>
+        <img src="/a/773c45be-db8a-4159-8b80-6d222bcab0be" alt="YouTube thumbnail showing RAM upgrade" width="320" height="180" style="margin: 10px;">
+        <p>Don't wait! Download NOW and join millions of satisfied customers! 🤑</p>
+        <p><small>Want to learn more about how this revolutionary RAM downloading process works? Click <a href="https://xdan.uk/rr" style="color: #00ff00;">here</a>!</small></p>
+      </div>
+      <button class="download-btn" onclick="startDownload()">
+        <img class="download-icon" src="/a/720cb17c-d124-45e4-bc57-77db97d47c99" alt="Download button icon" width="50" height="50">
+        DOWNLOAD NOW!
+      </button>
+      <div style="margin: 20px 0;">
+        <img src="/a/79462adb-9b25-4e4f-b3b5-3c16a4750dae" alt="Classic download button" width="120" height="40" style="cursor: pointer;" onclick="startDownload()">
+      </div>
+      <div id="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="status-text"></div>
+      <div class="virus" id="virus-text">⚠️ VIRUS DETECTED! Just kidding... 😈</div>
+    </div>
+    
+    <div class="modal-overlay" id="overlay"></div>
+    <div class="verification-modal" id="verification-modal">
+      <h2>🔐 Human Verification Required 🔐</h2>
+      <p>To complete your RAM download, please:</p>
+      <p>1. Follow XDan on Spotify</p>
+      <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank" class="verify-btn" onclick="showDoneButton()">Follow XDan 🎵</a>
+      <div id="done-button" style="display: none;">
+        <p>2. Click the button below when done</p>
+        <button class="verify-btn" onclick="verifyComplete()">Done 🤑</button>
+      </div>
+      <div class="spinner" id="verify-spinner"></div>
+      <div id="verify-status"></div>
+    </div>
+    
+    <script>
+    const messages = [
+      "Initializing RAM download sequence...",
+      "Hacking the mainframe...",
+      "Downloading more gigabytes...",
+      "Converting watts to gigabytes...",
+      "Playing Minecraft while waiting...",
+      "Downloading more internet...",
+      "Making computer go brrrrr...",
+      "Downloading RGB lighting for extra speed...",
+      "Reticulating splines...",
+      "ERROR: Human Verification required"
+    ];
+    
+    let isDownloading = false;
+    
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
     
-    await sleep(800);
-  }
-  
-  statusText.textContent = "Download complete! Redirecting to your FREE RAM...";
-  await sleep(1500);
-  window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-}
-</script></body></html>
+    function showDoneButton() {
+      document.getElementById('done-button').style.display = 'block';
+    }
+    
+    async function startDownload() {
+      if (isDownloading) return;
+      
+      isDownloading = true;
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const statusText = document.getElementById('status-text');
+      const virusText = document.getElementById('virus-text');
+      const downloadBtn = document.querySelector('.download-btn');
+      
+      downloadBtn.disabled = true;
+      progressContainer.style.display = 'block';
+      
+      for (let i = 0; i <= 90; i += 10) {
+        progressBar.style.width = i + '%';
+        
+        if (i === 90) {
+          progressBar.classList.add('error');
+          statusText.classList.add('error-text');
+          statusText.textContent = messages[messages.length - 1];
+        } else {
+          statusText.textContent = messages[Math.floor(i/10)] + ' ' + i + '%';
+        }
+        
+        if (i === 50) {
+          virusText.style.display = 'block';
+          await sleep(1000);
+          virusText.style.display = 'none';
+        }
+        
+        await sleep(800);
+      }
+      
+      await sleep(1000);
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('verification-modal').style.display = 'block';
+    }
+    
+    async function verifyComplete() {
+      const spinner = document.getElementById('verify-spinner');
+      const status = document.getElementById('verify-status');
+      const buttons = document.querySelectorAll('.verify-btn');
+      
+      buttons.forEach(btn => btn.disabled = true);
+      spinner.style.display = 'block';
+      status.textContent = 'Checking your reward...';
+      
+      await sleep(2000);
+      window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    }
+    </script></body></html>
