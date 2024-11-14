@@ -1,0 +1,311 @@
+<html><head><base href="." />
+<title>Keyboard Tester</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #1a1a1a;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+}
+
+.keyboard-container {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  margin: 5px 0;
+}
+
+.key {
+  background: #333;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  margin: 2px;
+  padding: 15px;
+  min-width: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  user-select: none;
+}
+
+.key.pressed {
+  background: linear-gradient(45deg, #2ecc71, #27ae60);
+  transform: scale(0.95);
+}
+
+.key.wide {
+  min-width: 80px;
+}
+
+.key.extra-wide {
+  min-width: 120px;
+}
+
+.floating-key {
+  position: absolute;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+  animation: float 2s ease-out forwards;
+  user-select: none;
+  z-index: 0;
+}
+
+.layout-selector {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #333;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  cursor: pointer;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-500px);
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+<body>
+  <select class="layout-selector" id="layoutSelector">
+    <option value="qwerty">QWERTY (US)</option>
+    <option value="qwertyUK">QWERTY (UK)</option>
+    <option value="dvorak">Dvorak</option>
+    <option value="colemak">Colemak</option>
+  </select>
+
+  <div class="keyboard-container" id="keyboard"></div>
+
+<script>
+const layouts = {
+  qwerty: [
+    ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+    ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+    ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', 'Enter'],
+    ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+    ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl'],
+    ['', '', '', 'Insert', 'Home', 'PgUp', '', '', ''],
+    ['', '', '', 'Delete', 'End', 'PgDn', '', '', ''],
+    ['', '', '', '', '↑', '', '', '', ''],
+    ['', '', '', '←', '↓', '→', '', '', '']
+  ],
+  qwertyUK: [
+    ['¬', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+    ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 'Enter'],
+    ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '#'],
+    ['Shift', '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
+    ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl'],
+    ['', '', '', 'Insert', 'Home', 'PgUp', '', '', ''],
+    ['', '', '', 'Delete', 'End', 'PgDn', '', '', ''],
+    ['', '', '', '', '↑', '', '', '', ''],
+    ['', '', '', '←', '↓', '→', '', '', '']
+  ],
+  dvorak: [
+    ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '[', ']', 'Backspace'],
+    ['Tab', '\'', ',', '.', 'p', 'y', 'f', 'g', 'c', 'r', 'l', '/', '=', '\\'],
+    ['Caps', 'a', 'o', 'e', 'u', 'i', 'd', 'h', 't', 'n', 's', '-', 'Enter'],
+    ['Shift', ';', 'q', 'j', 'k', 'x', 'b', 'm', 'w', 'v', 'z', 'Shift'],
+    ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl'],
+    ['', '', '', 'Insert', 'Home', 'PgUp', '', '', ''],
+    ['', '', '', 'Delete', 'End', 'PgDn', '', '', ''],
+    ['', '', '', '', '↑', '', '', '', ''],
+    ['', '', '', '←', '↓', '→', '', '', '']
+  ],
+  colemak: [
+    ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+    ['Tab', 'q', 'w', 'f', 'p', 'g', 'j', 'l', 'u', 'y', ';', '[', ']', '\\'],
+    ['Caps', 'a', 'r', 's', 't', 'd', 'h', 'n', 'e', 'i', 'o', '\'', 'Enter'],
+    ['Shift', 'z', 'x', 'c', 'v', 'b', 'k', 'm', ',', '.', '/', 'Shift'],
+    ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Win', 'Menu', 'Ctrl'],
+    ['', '', '', 'Insert', 'Home', 'PgUp', '', '', ''],
+    ['', '', '', 'Delete', 'End', 'PgDn', '', '', ''],
+    ['', '', '', '', '↑', '', '', '', ''],
+    ['', '', '', '←', '↓', '→', '', '', '']
+  ]
+};
+
+const pressedKeys = new Set();
+const activeKeys = new Set();
+
+function createKeyboard(layout) {
+  const keyboard = document.getElementById('keyboard');
+  keyboard.innerHTML = '';
+  
+  layouts[layout].forEach((row, rowIndex) => {
+    const keyboardRow = document.createElement('div');
+    keyboardRow.className = 'keyboard-row';
+    
+    row.forEach(key => {
+      if (key === '') return;
+      
+      const keyElement = document.createElement('div');
+      keyElement.className = 'key';
+      keyElement.dataset.key = key === '\\' ? 'backslash' : key.toLowerCase();
+      keyElement.textContent = key;
+      
+      if (pressedKeys.has(key === '\\' ? 'backslash' : key.toLowerCase())) {
+        keyElement.classList.add('pressed');
+        keyElement.style.background = 'linear-gradient(45deg, #2ecc71, #27ae60)';
+      }
+      
+      if (['Backspace', 'Enter', 'Shift'].includes(key)) {
+        keyElement.className += ' wide';
+      }
+      if (['Space'].includes(key)) {
+        keyElement.className += ' extra-wide';
+      }
+      
+      keyboardRow.appendChild(keyElement);
+    });
+    
+    keyboard.appendChild(keyboardRow);
+  });
+}
+
+document.getElementById('layoutSelector').addEventListener('change', (e) => {
+  createKeyboard(e.target.value);
+});
+
+document.addEventListener('keydown', (event) => {
+  event.preventDefault();
+  
+  let keyToUse = event.key.toLowerCase();
+  
+  // Handle special keys
+  if (event.key === 'Control') keyToUse = 'ctrl';
+  if (event.key === 'Alt') keyToUse = 'alt';
+  if (event.key === 'Meta') keyToUse = 'win';
+  if (event.key === 'ContextMenu') keyToUse = 'menu';
+  if (event.key === 'CapsLock') keyToUse = 'caps';
+  if (event.key === ' ') keyToUse = 'space';
+  if (event.key === 'Enter') keyToUse = 'enter';
+  if (event.key === 'Shift') keyToUse = 'shift';
+  if (event.key === 'Tab') keyToUse = 'tab';
+  if (event.key === 'Backspace') keyToUse = 'backspace';
+  if (event.key === '\\') keyToUse = 'backslash';
+  if (event.key === 'ArrowUp') keyToUse = '↑';
+  if (event.key === 'ArrowDown') keyToUse = '↓';
+  if (event.key === 'ArrowLeft') keyToUse = '←';
+  if (event.key === 'ArrowRight') keyToUse = '→';
+  if (event.key === 'Insert') keyToUse = 'insert';
+  if (event.key === 'Delete') keyToUse = 'delete';
+  if (event.key === 'Home') keyToUse = 'home';
+  if (event.key === 'End') keyToUse = 'end';
+  if (event.key === 'PageUp') keyToUse = 'pgup';
+  if (event.key === 'PageDown') keyToUse = 'pgdn';
+  
+  // Don't register Windows key
+  if (event.key === 'Meta') return;
+  
+  // Only create floating key if it's not already being held down
+  if (!activeKeys.has(keyToUse)) {
+    pressedKeys.add(keyToUse);
+    activeKeys.add(keyToUse);
+    
+    const keys = document.querySelectorAll(`[data-key="${keyToUse}"]`);
+    keys.forEach(key => {
+      key.classList.add('pressed');
+      key.style.background = 'linear-gradient(45deg, #2ecc71, #27ae60)';
+    });
+    
+    const floatingKey = document.createElement('div');
+    floatingKey.className = 'floating-key';
+    floatingKey.textContent = event.key;
+    
+    const randomX = Math.random() * (window.innerWidth - 60);
+    floatingKey.style.left = `${randomX}px`;
+    floatingKey.style.bottom = '100px';
+    
+    const hue1 = Math.floor(Math.random() * 360);
+    const hue2 = (hue1 + 40) % 360;
+    floatingKey.style.background = `linear-gradient(45deg, 
+      hsl(${hue1}, 80%, 60%), 
+      hsl(${hue2}, 80%, 60%)
+    )`;
+    
+    floatingKey.addEventListener('click', function() {
+      this.style.animation = 'pop 0.5s ease-out forwards';
+      setTimeout(() => {
+        this.remove();
+      }, 500);
+    });
+    
+    document.body.appendChild(floatingKey);
+    
+    setTimeout(() => {
+      if (floatingKey.parentElement) {
+        floatingKey.remove();
+      }
+    }, 2000);
+  }
+});
+
+document.addEventListener('keyup', (event) => {
+  let keyToUse = event.key.toLowerCase();
+  
+  // Handle special keys for keyup
+  if (event.key === 'Control') keyToUse = 'ctrl';
+  if (event.key === 'Alt') keyToUse = 'alt';
+  if (event.key === 'Meta') keyToUse = 'win';
+  if (event.key === 'ContextMenu') keyToUse = 'menu';
+  if (event.key === 'CapsLock') keyToUse = 'caps';
+  if (event.key === ' ') keyToUse = 'space';
+  if (event.key === 'Enter') keyToUse = 'enter';
+  if (event.key === 'Shift') keyToUse = 'shift';
+  if (event.key === 'Tab') keyToUse = 'tab';
+  if (event.key === 'Backspace') keyToUse = 'backspace';
+  if (event.key === '\\') keyToUse = 'backslash';
+  
+  activeKeys.delete(keyToUse);
+});
+
+// Initial keyboard creation
+createKeyboard('qwerty');
+</script>
+</body></html>
