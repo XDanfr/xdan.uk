@@ -6,7 +6,7 @@ document.getElementById('view-count').textContent = viewCount;
 
 // Copy Discord username to clipboard
 document.getElementById('discord-username').addEventListener('click', function (event) {
-    const discordUsername = "_xdan";
+    const discordUsername = "hyperquasistatic";
     navigator.clipboard.writeText(discordUsername).then(() => {
         const copyMessage = document.getElementById('copy-message');
 
