@@ -1,0 +1,467 @@
+<html><head><base href="/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometric Album Cover Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron&family=Share+Tech+Mono&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: #1a1a1a;
+      font-family: Arial, sans-serif;
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      margin: 20px;
+    }
+
+    #artCanvas {
+      border: 2px solid #333;
+      background: #000;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .text-control {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    select, input, #export-btn {
+      padding: 8px;
+      font-size: 14px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    #export-btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+      grid-column: span 2;
+    }
+
+    #export-btn:hover {
+      background: #2ecc71;
+    }
+
+    #export-btn:active {
+      background: #27ae60;
+    }
+
+    .description {
+      max-width: 600px;
+      text-align: center;
+      margin: 40px auto;
+      line-height: 1.6;
+      color: #aaa;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      color: #888;
+    }
+
+    footer a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .text-protection-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #444;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #2ecc71;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    .slider.round {
+      border-radius: 34px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .switch-label {
+      color: white;
+      font-size: 14px;
+    }
+
+    .warning-text {
+      color: #888;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Album Cover Maker!</h1>
+  <div style="color: #888; font-size: 14px; text-align: center; margin-bottom: 20px;">In development, not everything works 100% properly.</div>
+  <div class="controls">
+    <div class="text-control">
+      <input type="text" id="topText" placeholder="Top text">
+      <select id="topFont">
+        <option value="Orbitron">Futuristic</option>
+        <option value="Share Tech Mono">Terminal</option>
+      </select>
+    </div>
+    <div class="text-control">
+      <input type="text" id="bottomText" placeholder="Bottom text">
+      <select id="bottomFont">
+        <option value="Orbitron">Futuristic</option>
+        <option value="Share Tech Mono">Terminal</option>
+      </select>
+    </div>
+    <div class="text-control">
+      <input type="text" id="leftText" placeholder="Left text">
+      <select id="leftFont">
+        <option value="Orbitron">Futuristic</option>
+        <option value="Share Tech Mono">Terminal</option>
+      </select>
+    </div>
+    <div class="text-control">
+      <input type="text" id="rightText" placeholder="Right text">
+      <select id="rightFont">
+        <option value="Orbitron">Futuristic</option>
+        <option value="Share Tech Mono">Terminal</option>
+      </select>
+    </div>
+  </div>
+  <div class="text-protection-control">
+    <label class="switch">
+      <input type="checkbox" id="textProtection">
+      <span class="slider round"></span>
+    </label>
+    <span class="switch-label">Protect text areas <span style="color: #888; font-size: 12px;">(sometimes breaks)</span></span>
+  </div>
+  <div class="warning-text">(this will replace your current image, be careful!)</div>
+  <div id="canvas-container">
+    <canvas id="artCanvas" width="500" height="500"></canvas>
+  </div>
+  <button id="export-btn">Export (3000x3000)</button>
+  <div class="description">
+    Create unique, geometric album covers with just a click! Customize your design by adding text on all four sides using different font styles - choose from futuristic or console fonts to match your aesthetic. This tool is completely free to use - though a shoutout would be greatly appreciated if you use it in your work. Click the canvas to generate new designs, and use the export button to download in high resolution.
+  </div>
+  <footer>
+    By <a href="https://xdan.co.uk">XDan</a>
+  </footer>
+  <div class="loading-overlay">
+    <div class="loader"></div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('artCanvas');
+    const ctx = canvas.getContext('2d');
+    const loadingOverlay = document.querySelector('.loading-overlay');
+    let currentArtData = null;
+
+    function isInTextArea(x, y, width, height, padding) {
+      const textMargin = width * 0.1; // Margin around text areas
+      const topBottom = width * 0.08; // Height of top/bottom text areas
+      const sides = width * 0.08; // Width of side text areas
+      
+      // Check top text area
+      if (y < padding + topBottom) return true;
+      
+      // Check bottom text area
+      if (y > height - padding - topBottom) return true;
+      
+      // Check left text area
+      if (x < padding + sides) return true;
+      
+      // Check right text area
+      if (x > width - padding - sides) return true;
+      
+      return false;
+    }
+
+    function generateColorScheme() {
+      const hue = Math.random() * 360;
+      return {
+        background: `hsl(${hue}, 70%, 15%)`,
+        colors: [
+          `hsl(${hue}, 70%, 50%)`,
+          `hsl(${(hue + 30) % 360}, 70%, 60%)`,
+          `hsl(${(hue + 60) % 360}, 70%, 45%)`,
+          `hsl(${(hue + 90) % 360}, 70%, 55%)`,
+          `hsl(${(hue + 120) % 360}, 70%, 65%)`
+        ]
+      };
+    }
+
+    function drawShape(ctx, x, y, size, type, color, roundedCorners = false) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+
+      switch(type) {
+        case 0:
+          ctx.arc(x, y, size/2, 0, Math.PI * 2);
+          break;
+        case 1:
+          ctx.moveTo(x, y - size/2);
+          ctx.lineTo(x + size/2, y + size/2);
+          ctx.lineTo(x - size/2, y + size/2);
+          break;
+        case 2:
+          if (roundedCorners) {
+            const radius = size * 0.1;
+            ctx.moveTo(x - size/2 + radius, y - size/2);
+            ctx.lineTo(x + size/2 - radius, y - size/2);
+            ctx.arcTo(x + size/2, y - size/2, x + size/2, y - size/2 + radius, radius);
+            ctx.lineTo(x + size/2, y + size/2 - radius);
+            ctx.arcTo(x + size/2, y + size/2, x + size/2 - radius, y + size/2, radius);
+            ctx.lineTo(x - size/2 + radius, y + size/2);
+            ctx.arcTo(x - size/2, y + size/2, x - size/2, y + size/2 - radius, radius);
+            ctx.lineTo(x - size/2, y - size/2 + radius);
+            ctx.arcTo(x - size/2, y - size/2, x - size/2 + radius, y - size/2, radius);
+          } else {
+            ctx.rect(x - size/2, y - size/2, size, size);
+          }
+          break;
+      }
+
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawText(ctx, width, height) {
+      const padding = width * 0.05;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+
+      const topText = document.getElementById('topText').value;
+      const topFont = document.getElementById('topFont').value;
+      const topFontSize = width * 0.04;
+      ctx.font = `bold ${topFontSize}px ${topFont}`;
+      ctx.fillText(topText, width/2, padding + width * 0.04);
+
+      const bottomText = document.getElementById('bottomText').value;
+      const bottomFont = document.getElementById('bottomFont').value;
+      const bottomFontSize = width * 0.04;
+      ctx.font = `bold ${bottomFontSize}px ${bottomFont}`;
+      ctx.fillText(bottomText, width/2, height - padding);
+
+      const leftText = document.getElementById('leftText').value;
+      const leftFont = document.getElementById('leftFont').value;
+      const leftFontSize = width * 0.04;
+      ctx.font = `bold ${leftFontSize}px ${leftFont}`;
+      ctx.save();
+      ctx.translate(padding + width * 0.04, height/2);
+      ctx.rotate(-Math.PI/2);
+      ctx.fillText(leftText, 0, 0);
+      ctx.restore();
+
+      const rightText = document.getElementById('rightText').value;
+      const rightFont = document.getElementById('rightFont').value;
+      const rightFontSize = width * 0.04;
+      ctx.font = `bold ${rightFontSize}px ${rightFont}`;
+      ctx.save();
+      ctx.translate(width - padding - width * 0.04, height/2);
+      ctx.rotate(Math.PI/2);
+      ctx.fillText(rightText, 0, 0);
+      ctx.restore();
+    }
+
+    function generateArt(ctx, width, height, existingData = null) {
+      const artData = existingData || {
+        colorScheme: generateColorScheme(),
+        shapes: []
+      };
+      
+      if (!existingData) {
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const numShapes = 25;
+        const padding = width * 0.05;
+        const textProtection = document.getElementById('textProtection').checked;
+        
+        let attempts = 0;
+        const maxAttempts = 100;
+        
+        while (artData.shapes.length < numShapes && attempts < maxAttempts) {
+          const x = centerX + (Math.random() - 0.5) * width * 0.6;
+          const y = centerY + (Math.random() - 0.5) * height * 0.6;
+          const size = Math.random() * (width * 0.2) + (width * 0.1);
+          
+          // Skip if shape would intersect with text areas when protection is enabled
+          if (textProtection && isInTextArea(x, y, width, height, padding)) {
+            attempts++;
+            continue;
+          }
+          
+          artData.shapes.push({
+            x: x,
+            y: y,
+            size: size,
+            type: Math.floor(Math.random() * 3),
+            color: artData.colorScheme.colors[Math.floor(Math.random() * artData.colorScheme.colors.length)],
+            zIndex: Math.random(),
+            rounded: Math.random() > 0.5
+          });
+        }
+        
+        artData.shapes.sort((a, b) => a.zIndex - b.zIndex);
+        currentArtData = artData;
+      }
+
+      ctx.fillStyle = artData.colorScheme.background;
+      ctx.fillRect(0, 0, width, height);
+
+      artData.shapes.forEach(shape => {
+        const scaledX = (shape.x / 500) * width;
+        const scaledY = (shape.y / 500) * height;
+        const scaledSize = (shape.size / 500) * width;
+        drawShape(ctx, scaledX, scaledY, scaledSize, shape.type, shape.color, shape.rounded);
+      });
+
+      drawText(ctx, width, height);
+      return artData;
+    }
+
+    function redraw() {
+      generateArt(ctx, canvas.width, canvas.height, currentArtData);
+    }
+
+    generateArt(ctx, canvas.width, canvas.height);
+
+    document.querySelectorAll('input, select').forEach(element => {
+      element.addEventListener('input', redraw);
+    });
+
+    document.getElementById('export-btn').addEventListener('click', async () => {
+      loadingOverlay.style.display = 'flex';
+      
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = 3000;
+      exportCanvas.height = 3000;
+      
+      setTimeout(() => {
+        generateArt(exportCanvas.getContext('2d'), exportCanvas.width, exportCanvas.height, currentArtData);
+        
+        const link = document.createElement('a');
+        link.download = 'album-cover.png';
+        link.href = exportCanvas.toDataURL('image/png');
+        link.click();
+        
+        loadingOverlay.style.display = 'none';
+      }, 100);
+    });
+
+    canvas.addEventListener('click', () => {
+      generateArt(ctx, canvas.width, canvas.height);
+    });
+
+    document.getElementById('textProtection').addEventListener('change', () => {
+      generateArt(ctx, canvas.width, canvas.height);
+    });
+  </script>
+</body></html>
