@@ -1,0 +1,893 @@
+<html><head><base href="." />
+<title>Go11 - A Tactical Board Game</title>
+<style>
+:root {
+  --glow-color: #0ff;
+  --board-bg: #1a1a2e;
+  --safe-space: #143601;
+  --player1-color: #ff3366;
+  --player2-color: #33ccff;
+}
+
+body {
+  background: #0f0f1a;
+  color: white;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 90vw;
+  max-width: 1000px; /* Reduced from 1200px */
+  margin: 1rem auto;
+  padding: 1rem;
+  background: rgba(0,0,0,0.5);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+}
+
+.menu-btn {
+  background: linear-gradient(45deg, #1a1a2e, #2a2a4e);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  margin: 0.25rem;
+  border-radius: 15px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0,255,255,0.1);
+}
+
+.menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px var(--glow-color);
+}
+
+.menu-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.menu-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 100%; /* Add max-width */
+  box-sizing: border-box; /* Ensure proper width calculation */
+}
+
+.space {
+  min-height: 45px;
+  width: 100%;
+  max-width: 100%; /* Add max-width */
+  background: var(--board-bg);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  transition: all 0.3s ease;
+  padding: 0 15px; /* Reduced from 20px */
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
+}
+
+.safe-space {
+  background: var(--safe-space);
+  box-shadow: 0 0 10px rgba(0,255,0,0.2);
+}
+
+.piece {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+.piece.moving {
+  animation: movePiece 0.5s ease-in-out;
+}
+
+@keyframes movePiece {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3) translateY(-20px);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.piece.captured {
+  animation: capturePiece 0.5s ease-out;
+}
+
+@keyframes capturePiece {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+.p1-piece {
+  background: var(--player1-color);
+  box-shadow: 0 0 10px var(--player1-color);
+}
+
+.p2-piece {
+  background: var(--player2-color);
+  box-shadow: 0 0 10px var(--player2-color);
+}
+
+.die-container {
+  perspective: 600px;
+  width: 45px;
+  height: 45px;
+  margin: 0.5rem auto;
+}
+
+.die {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.5s ease;
+}
+
+.die-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--board-bg);
+  display: grid;
+  grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+  padding: 10px;
+  font-size: 2rem;
+  box-shadow: inset 0 0 10px rgba(0,255,255,0.3);
+  border: 2px solid var(--glow-color);
+}
+
+.face-1 { transform: translateZ(30px); }
+.face-2 { transform: rotateY(180deg) translateZ(30px); }
+.face-3 { transform: rotateX(90deg) translateZ(30px); }
+.face-4 { transform: rotateX(-90deg) translateZ(30px); }
+.face-5 { transform: rotateY(90deg) translateZ(30px); }
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  margin: auto;
+}
+
+.die-rolling {
+  animation: rolling 1s ease-out;
+}
+
+@keyframes rolling {
+  0% { transform: rotateX(0) rotateY(0); }
+  25% { transform: rotateX(360deg) rotateY(180deg); }
+  50% { transform: rotateX(720deg) rotateY(360deg); }
+  75% { transform: rotateX(1080deg) rotateY(540deg); }
+  100% { transform: rotateX(1440deg) rotateY(720deg); }
+}
+
+.hidden {
+  display: none;
+}
+
+input[type="text"] {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  color: white;
+  margin: 0.5rem;
+}
+
+.status {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+}
+
+.menu-btn[onclick^="selectPiece"] {
+  position: relative;
+}
+
+.menu-btn[onclick^="selectPiece"]:hover + .piece.p1-piece,
+.menu-btn[onclick^="selectPiece"]:hover + .piece.p2-piece {
+  animation: pulsePiece 0.5s ease infinite;
+}
+
+@keyframes pulsePiece {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse-highlight {
+  animation: pulsePiece 1s ease infinite;
+}
+
+h2 {
+  margin: 0.5rem 0;
+}
+
+.piece-selection {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.selection-wrapper {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+#roll-and-moves {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.keybind-list {
+  background: rgba(255,255,255,0.1);
+  padding: 1rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.keybind-list p {
+  margin: 0.5rem 0;
+}
+
+.keybind-list strong {
+  color: var(--glow-color);
+  padding: 0.25rem 0.5rem;
+  background: rgba(0,0,0,0.3);
+  border-radius: 5px;
+  margin-right: 0.5rem;
+}
+
+.rules-content {
+  background: rgba(255,255,255,0.1);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.rules-content ul {
+  margin: 0.5rem 0 1rem 1.5rem;
+  padding: 0;
+}
+
+.rules-content ul ul {
+  margin: 0.5rem 0 0.5rem 1.5rem;
+}
+
+.rules-content li {
+  margin: 0.5rem 0;
+}
+
+.rules-content p {
+  margin: 1rem 0;
+}
+
+.rules-content strong {
+  color: var(--glow-color);
+}
+
+/* Add to existing CSS */
+#win-screen {
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+
+#win-screen img {
+  max-width: 300px; /* Change width to max-width */
+  height: auto; /* Change fixed height to auto */
+  margin: 1rem;
+  transform: scaleX(2); /* Keep the funny stretching */
+  animation: wobble 2s ease infinite;
+}
+
+#win-screen img.logo {
+  max-width: 200px; /* Change width to max-width */
+  height: auto; /* Change fixed height to auto */
+  transform: none; /* Remove any stretching from the logo */
+}
+
+#win-screen h1 {
+  color: var(--glow-color);
+  font-size: 3rem;
+  margin: 2rem 0;
+  animation: rainbow 3s linear infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+}
+
+@keyframes rainbow {
+  0% { color: #ff0000; }
+  20% { color: #ff00ff; }
+  40% { color: #0000ff; }
+  60% { color: #00ffff; }
+  80% { color: #00ff00; }
+  100% { color: #ff0000; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="main-menu">
+    <img src="logo.png" alt="GO11 Logo" style="max-width: 200px; height: auto; margin: 1rem 0;">
+    <button class="menu-btn" onclick="showNameEntry()">Enter Player Names</button>
+    <button class="menu-btn" onclick="startGame()">Play Game</button>
+    <button class="menu-btn" onclick="showKeybinds()">Keybinds</button>
+    <button class="menu-btn" onclick="showRules()">Rules</button>
+    <button class="menu-btn" onclick="quit()">Quit</button>
+  </div>
+
+  <div id="keybinds-menu" class="hidden">
+    <h2>Keybinds</h2>
+    <div class="keybind-list">
+      <p><strong>R</strong> - Roll Die</p>
+      <p><strong>1</strong> - Move Piece 1</p>
+      <p><strong>2</strong> - Move Piece 2</p>
+    </div>
+    <button class="menu-btn" onclick="hideKeybinds()">Back</button>
+  </div>
+
+  <div id="rules-menu" class="hidden">
+    <h2>How to play Go11</h2>
+    
+    <div class="rules-content">
+      <p><strong>Objective</strong>: Move both of your pieces from START to FINISH first.</p>
+
+      <p><strong>Gameplay</strong>:</p>
+      <ul>
+        <li>Players take turns rolling a 5-sided die.</li>
+        <li>The die roll determines how far a player moves one of their pieces:</li>
+        <ul>
+          <li><strong>1</strong>: Move a piece 1 space forward.</li>
+          <li><strong>2</strong>: Move a piece 2 spaces forward.</li>
+          <li><strong>3</strong>: Move a piece 3 spaces forward.</li>
+          <li><strong>4</strong>: Move a piece 1 space back.</li>
+          <li><strong>5</strong>: Move a piece to the next unoccupied space.</li>
+        </ul>
+      </ul>
+
+      <p><strong>Piece Interactions</strong>:</p>
+      <ul>
+        <li>If a piece lands on a space occupied by an opponent's piece (except safe spaces), the opponent's piece goes back to START.</li>
+        <li>Players cannot move a piece onto a space occupied by their own other piece, unless it's a safe space.</li>
+      </ul>
+
+      <p><strong>Winning</strong>: The first player to get both of their pieces to FINISH wins.</p>
+    </div>
+    
+    <button class="menu-btn" onclick="hideRules()">Back</button>
+  </div>
+
+  <div id="name-entry" class="hidden">
+    <h2>Enter Player Names</h2>
+    <input type="text" id="p1-name" placeholder="Player 1 Name">
+    <input type="text" id="p2-name" placeholder="Player 2 Name">
+    <button class="menu-btn" onclick="saveNames()">Save Names</button>
+  </div>
+
+  <div id="game-board" class="hidden">
+    <div class="board">
+      <div class="space safe-space" id="space-11">FINISH</div>
+      <div class="space" id="space-10"></div>
+      <div class="space" id="space-9"></div>
+      <div class="space" id="space-8"></div>
+      <div class="space" id="space-7"></div>
+      <div class="space" id="space-6"></div>
+      <div class="space safe-space" id="space-5"></div>
+      <div class="space" id="space-4"></div>
+      <div class="space" id="space-3"></div>
+      <div class="space" id="space-2"></div>
+      <div class="space" id="space-1"></div>
+      <div class="space safe-space" id="space-0">START</div>
+    </div>
+    <div class="status" id="status"></div>
+    <div id="roll-and-moves">
+      <button class="menu-btn" id="roll-btn" onclick="rollDie()">Roll Die</button>
+      <div class="piece-selection hidden" id="piece-selection">
+        <div class="selection-wrapper">
+          <button class="menu-btn" onclick="selectPiece(1)" onmouseover="highlightPiece(1)" onmouseout="unhighlightPiece(1)" disabled>Move Piece 1</button>
+        </div>
+        <div class="selection-wrapper">
+          <button class="menu-btn" onclick="selectPiece(2)" onmouseover="highlightPiece(2)" onmouseout="unhighlightPiece(2)" disabled>Move Piece 2</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quit-menu" class="hidden">
+    <h2>Where do you want to go?</h2>
+    <button class="menu-btn" onclick="window.location.href='https://google.com'">Google</button>
+    <button class="menu-btn" onclick="window.location.href='https://xdan.co.uk'">Home</button>
+    <button class="menu-btn" onclick="goToSurprise()">Surprise me</button>
+    <button class="menu-btn" onclick="backToGame()">Back to Menu</button>
+  </div>
+
+  <div id="win-screen" class="hidden">
+    <img src="logo.png" alt="GO11 Logo" class="logo">
+    <h1 id="win-message"></h1>
+    <img src="bell.png" alt="Bell">
+    <img src="whistle.png" alt="Whistle">
+    <button class="menu-btn" onclick="startGame()">Replay</button>
+    <button class="menu-btn" onclick="backToMainMenu()">Back to Menu</button>
+  </div>
+</div>
+
+<script>
+let currentPlayer = 1;
+let p1Name = 'Player 1';
+let p2Name = 'Player 2';
+let gameState = {
+  p1: {piece1: 0, piece2: 0},
+  p2: {piece1: 0, piece2: 0}
+};
+let currentRoll = 0;
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateBoard();
+});
+
+// Show and hide keybinds menu
+function showKeybinds() {
+  document.getElementById('main-menu').classList.add('hidden');
+  document.getElementById('keybinds-menu').classList.remove('hidden');
+}
+
+function hideKeybinds() {
+  document.getElementById('keybinds-menu').classList.add('hidden');
+  document.getElementById('main-menu').classList.remove('hidden');
+}
+
+function showNameEntry() {
+  document.getElementById('main-menu').classList.add('hidden');
+  document.getElementById('name-entry').classList.remove('hidden');
+}
+
+function saveNames() {
+  p1Name = document.getElementById('p1-name').value || 'Player 1';
+  p2Name = document.getElementById('p2-name').value || 'Player 2';
+  document.getElementById('name-entry').classList.add('hidden');
+  document.getElementById('main-menu').classList.remove('hidden');
+}
+
+function startGame() {
+  document.getElementById('main-menu').classList.add('hidden');
+  document.getElementById('win-screen').classList.add('hidden');
+  document.getElementById('game-board').classList.remove('hidden');
+  resetGame();
+  updateBoard();
+  setPieceButtonsState(false); // Ensure buttons start disabled
+}
+
+function quit() {
+  // Hide all menus and show quit menu
+  document.getElementById('main-menu').classList.add('hidden');
+  document.getElementById('game-board').classList.add('hidden');
+  document.getElementById('quit-menu').classList.remove('hidden');
+}
+
+function resetGame() {
+  gameState = {
+    p1: {piece1: 0, piece2: 0},
+    p2: {piece1: 0, piece2: 0}
+  };
+  currentPlayer = 1;
+  currentRoll = 0;
+  updateStatus(`${currentPlayer === 1 ? p1Name : p2Name}'s turn`);
+}
+
+function rollDie() {
+  document.getElementById('roll-btn').disabled = true;
+
+  const dieContainer = document.createElement('div');
+  dieContainer.className = 'die-container';
+  const dieElement = document.createElement('div');
+  dieElement.className = 'die';
+  
+  // Create all 5 faces with proper dot patterns  
+  for(let i = 1; i <= 5; i++) {
+    const face = document.createElement('div');
+    face.className = `die-face face-${i}`;
+    
+    // Create dots based on number  
+    switch(i) {
+      case 1:
+        face.appendChild(createDot('5')); // Center
+        break;
+      case 2:
+        face.appendChild(createDot('3')); // Top right
+        face.appendChild(createDot('7')); // Bottom left
+        break;
+      case 3:
+        face.appendChild(createDot('3')); // Top right
+        face.appendChild(createDot('5')); // Center
+        face.appendChild(createDot('7')); // Bottom left
+        break;
+      case 4:
+        face.appendChild(createDot('1')); // Top left
+        face.appendChild(createDot('3')); // Top right
+        face.appendChild(createDot('7')); // Bottom left
+        face.appendChild(createDot('9')); // Bottom right
+        break;
+      case 5:
+        face.appendChild(createDot('1')); // Top left
+        face.appendChild(createDot('3')); // Top right
+        face.appendChild(createDot('5')); // Center
+        face.appendChild(createDot('7')); // Bottom left
+        face.appendChild(createDot('9')); // Bottom right
+        break;
+    }
+    dieElement.appendChild(face);
+  }
+  
+  dieContainer.appendChild(dieElement);
+
+  // Replace any existing die
+  const oldDie = document.querySelector('.die-container');
+  if (oldDie) {
+    oldDie.remove();
+  }
+
+  // Insert before the roll button
+  const rollBtn = document.getElementById('roll-btn');
+  rollBtn.parentNode.insertBefore(dieContainer, rollBtn);
+
+  // Start rolling animation
+  dieElement.style.animation = 'rolling 1.5s ease-out';
+
+  // Generate roll result 1-5
+  currentRoll = Math.floor(Math.random() * 5) + 1;
+
+  // Calculate final rotation to show correct number
+  const rotations = {
+    1: 'rotateX(0) rotateY(0)',
+    2: 'rotateX(0) rotateY(180deg)', 
+    3: 'rotateX(-90deg) rotateY(0)',
+    4: 'rotateX(90deg) rotateY(0)',
+    5: 'rotateY(90deg) rotateX(0)'
+  };
+
+  // Update die face after animation
+  setTimeout(() => {
+    dieElement.style.animation = 'none';
+    dieElement.style.transform = rotations[currentRoll];
+    
+    let action = '';
+    if (currentRoll === 4) {
+      action = 'Move one space back';
+    } else if (currentRoll === 5) {
+      action = 'Move to next unoccupied space';
+    } else {
+      action = `Move ${currentRoll} space${currentRoll > 1 ? 's' : ''} forward`;
+    }
+    
+    updateStatus(`${currentPlayer === 1 ? p1Name : p2Name} rolled a ${currentRoll}. ${action}`);
+    
+    if(canMove()) {
+      document.getElementById('piece-selection').classList.remove('hidden');
+      setPieceButtonsState(true); // Enable buttons after roll
+    } else {
+      updateStatus(`No valid moves available. ${currentPlayer === 1 ? p2Name : p1Name}'s turn`);
+      switchPlayer();
+    }
+  }, 1500);
+}
+
+function createDot(position) {
+  const dot = document.createElement('div');
+  dot.className = 'dot';
+  dot.style.gridArea = `${Math.ceil(position/3)} / ${((position-1)%3)+1}`;
+  return dot;
+}
+
+function canMove() {
+  const player = gameState[`p${currentPlayer}`];
+  return canMovePiece(player.piece1) || canMovePiece(player.piece2);
+}
+
+function canMovePiece(position) {
+  if(currentRoll === 4) {
+    return position > 0;
+  } else if(currentRoll === 5) {
+    return findNextUnoccupiedSpace(position) > position;
+  }
+  return position < 11;
+}
+
+function highlightPiece(pieceNum) {
+  const player = gameState[`p${currentPlayer}`];
+  const position = player[`piece${pieceNum}`];
+  const space = document.getElementById(`space-${position}`);
+  if (space) {
+    // Find specifically the piece that matches both player and piece number
+    const pieces = Array.from(space.querySelectorAll(`.${currentPlayer === 1 ? 'p1-piece' : 'p2-piece'}`));
+    const targetPiece = pieces.find(piece => piece.dataset.pieceNum === pieceNum.toString());
+    if (targetPiece) {
+      targetPiece.classList.add('pulse-highlight');
+    }
+  }
+}
+
+function unhighlightPiece(pieceNum) {
+  const player = gameState[`p${currentPlayer}`];
+  const position = player[`piece${pieceNum}`];
+  const space = document.getElementById(`space-${position}`);
+  if (space) {
+    // Find specifically the piece that matches both player and piece number
+    const pieces = Array.from(space.querySelectorAll(`.${currentPlayer === 1 ? 'p1-piece' : 'p2-piece'}`));
+    const targetPiece = pieces.find(piece => piece.dataset.pieceNum === pieceNum.toString());
+    if (targetPiece) {
+      targetPiece.classList.remove('pulse-highlight');
+    }
+  }
+}
+
+function selectPiece(pieceNum) {
+  const player = gameState[`p${currentPlayer}`];
+  const position = player[`piece${pieceNum}`];
+  
+  if(!canMovePiece(position)) {
+    updateStatus('Invalid move. Select the other piece.');
+    return;
+  }
+  
+  let newPosition;
+  
+  if(currentRoll === 4) {
+    newPosition = Math.max(0, position - 1);
+  } else if(currentRoll === 5) {
+    newPosition = findNextUnoccupiedSpace(position);
+    if(newPosition === position) {
+      updateStatus('No unoccupied spaces ahead. Select the other piece.');
+      return;
+    }
+  } else {
+    newPosition = Math.min(11, position + currentRoll);
+  }
+    
+  movePiece(pieceNum, newPosition);
+}
+
+function findNextUnoccupiedSpace(currentPosition) {
+  if(currentPosition >= 11) return currentPosition;
+  
+  for(let pos = currentPosition + 1; pos <= 11; pos++) {
+    if([5, 11].includes(pos)) continue;
+    
+    const isOccupied = Object.values(gameState).some(player => 
+      Object.values(player).some(piecePos => piecePos === pos)
+    );
+    
+    if(!isOccupied) {
+      return pos;
+    }
+  }
+  
+  return currentPosition; 
+}
+
+function movePiece(pieceNum, newPosition) {
+  const player = gameState[`p${currentPlayer}`];
+  const otherPiece = pieceNum === 1 ? player.piece2 : player.piece1;
+  const currentPosition = player[`piece${pieceNum}`];
+  
+  if(newPosition === otherPiece && ![0,5,11].includes(newPosition)) {
+    updateStatus('Cannot move to space occupied by your other piece');
+    return;
+  }
+  
+  const currentSpace = document.getElementById(`space-${currentPosition}`);
+  const movingPiece = currentSpace.querySelector(`.${currentPlayer === 1 ? 'p1-piece' : 'p2-piece'}`);
+  if(movingPiece) {
+    movingPiece.classList.add('moving');
+  }
+  
+  if(![0,5,11].includes(newPosition)) {
+    const opponent = gameState[`p${currentPlayer === 1 ? 2 : 1}`];
+    const targetSpace = document.getElementById(`space-${newPosition}`);
+    
+    if(opponent.piece1 === newPosition || opponent.piece2 === newPosition) {
+      const capturedPieces = targetSpace.querySelectorAll(`.${currentPlayer === 1 ? 'p2-piece' : 'p1-piece'}`);
+      capturedPieces.forEach(piece => {
+        piece.classList.add('captured');
+      });
+    }
+    
+    if(opponent.piece1 === newPosition) opponent.piece1 = 0;
+    if(opponent.piece2 === newPosition) opponent.piece2 = 0;
+  }
+  
+  setTimeout(() => {
+    setPieceButtonsState(false); // Disable buttons after move
+    player[`piece${pieceNum}`] = newPosition;
+    updateBoard();
+    
+    if(checkWin()) {
+      updateStatus(`${currentPlayer === 1 ? p1Name : p2Name} wins!`);
+      setTimeout(() => {
+        document.getElementById('game-board').classList.add('hidden');
+        document.getElementById('win-screen').classList.remove('hidden');
+      }, 2000);
+      return;
+    }
+    
+    switchPlayer();
+  }, 500);
+}
+
+function switchPlayer() {
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+  document.getElementById('piece-selection').classList.add('hidden');
+  setPieceButtonsState(false); // Disable buttons when switching players
+  document.getElementById('roll-btn').disabled = false; 
+  updateStatus(`${currentPlayer === 1 ? p1Name : p2Name}'s turn`);
+}
+
+function checkWin() {
+  const player = gameState[`p${currentPlayer}`];
+  const hasWon = player.piece1 === 11 && player.piece2 === 11;
+  
+  if (hasWon) {
+    const winScreen = document.getElementById('win-screen');
+    const winMessage = document.getElementById('win-message');
+    winMessage.textContent = `${currentPlayer === 1 ? p1Name : p2Name} wins!`;
+    
+    setTimeout(() => {
+      document.getElementById('game-board').classList.add('hidden');
+      winScreen.classList.remove('hidden');
+    }, 1000);
+  }
+  
+  return hasWon;
+}
+
+// Add new function to handle returning to main menu
+function backToMainMenu() {
+  document.getElementById('win-screen').classList.add('hidden');
+  document.getElementById('main-menu').classList.remove('hidden');
+}
+
+function updateBoard() {
+  for(let i = 0; i <= 11; i++) {
+    const space = document.getElementById(`space-${i}`);
+    if(space) {
+      space.innerHTML = i === 0 ? 'START' : i === 11 ? 'FINISH' : '';
+    }
+  }
+  
+  Object.entries(gameState).forEach(([player, pieces]) => {
+    Object.entries(pieces).forEach(([pieceKey, position]) => {
+      const space = document.getElementById(`space-${position}`);
+      if(space) {
+        const piece = document.createElement('div');
+        piece.className = `piece ${player === 'p1' ? 'p1-piece' : 'p2-piece'}`;
+        piece.dataset.pieceNum = pieceKey === 'piece1' ? '1' : '2';
+        space.appendChild(piece);
+      }
+    });
+  });
+}
+
+function updateStatus(message) {
+  const statusElement = document.getElementById('status');
+  if(statusElement) {
+    statusElement.textContent = message;
+  }
+}
+
+function setPieceButtonsState(enabled) {
+  const buttons = document.querySelectorAll('#piece-selection button');
+  buttons.forEach(button => {
+    button.disabled = !enabled;
+  });
+}
+
+// Add keyboard event listener
+document.addEventListener('keydown', function(event) {
+  // Only process if game board is visible
+  if (document.getElementById('game-board').classList.contains('hidden')) {
+    return;
+  }
+
+  switch(event.key.toLowerCase()) {
+    case 'r':
+      // Only allow roll if it's time to roll
+      if (!document.getElementById('roll-btn').disabled) {
+        rollDie();
+      }
+      break;
+    case '1':
+    case '2':
+      // Only allow piece selection if piece selection is visible and buttons are enabled
+      const pieceSelection = document.getElementById('piece-selection');
+      if (!pieceSelection.classList.contains('hidden')) {
+        const pieceButtons = pieceSelection.querySelectorAll('button');
+        const pieceNum = parseInt(event.key);
+        if (!pieceButtons[pieceNum - 1].disabled) {
+          selectPiece(pieceNum);
+        }
+      }
+      break;
+  }
+});
+
+// Initial setup
+updateBoard();
+
+function showRules() {
+  document.getElementById('main-menu').classList.add('hidden');
+  document.getElementById('rules-menu').classList.remove('hidden');
+}
+
+function hideRules() {
+  document.getElementById('rules-menu').classList.add('hidden');
+  document.getElementById('main-menu').classList.remove('hidden');
+}
+
+// Add function to handle surprise navigation
+function goToSurprise() {
+  const surpriseUrls = [
+    'https://xdan.uk/rr',
+    'https://xdan.uk/ram',
+    'https://xdan.uk/album'
+  ];
+  const randomUrl = surpriseUrls[Math.floor(Math.random() * surpriseUrls.length)];
+  window.location.href = randomUrl;
+}
+
+// Add backToGame function
+function backToGame() {
+  document.getElementById('quit-menu').classList.add('hidden');
+  document.getElementById('main-menu').classList.remove('hidden');
+}
+</script>
+</body></html>
