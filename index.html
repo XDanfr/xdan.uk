@@ -1,516 +1,867 @@
 <html><head><base href="/">
-    <style>
-    :root {
-      --kde-bg: #1a1a1a;
-      --kde-panel: #2a2a2a;
-      --kde-text: #ffffff;
-      --kde-accent: #3daee9;
-    }
-    
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Noto Sans', sans-serif;
-      background-color: var(--kde-bg);
-      color: var(--kde-text);
-      height: 100vh;
-      overflow: hidden;
-    }
-    
-    .taskbar {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      height: 40px;
-      background: var(--kde-panel);
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      box-shadow: 0 -1px 3px rgba(0,0,0,0.2);
-    }
-    
-    .start-button {
-      width: 30px;
-      height: 30px;
-      margin-right: 10px;
-      cursor: pointer;
-    }
-    
-    .social-icons {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .social-icon {
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    
-    .social-icon:hover {
-      transform: scale(1.1);
-    }
-    
-    .system-tray {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-    
-    .clock {
-      padding: 0 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 14px;
-    }
-    
-    .clock-time {
-      font-weight: bold;
-    }
-    
-    .clock-date {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    
-    .desktop-icon {
-      position: absolute;
-      text-align: center;
-      cursor: pointer;
-    }
-    
-    .terminal-icon {
-      top: 20px;
-      left: 20px;
-    }
-    
-    .discord-copy {
-      top: 20px;
-      left: 100px;
-    }
-    
-    .desktop-icon img {
-      width: 48px;
-      height: 48px;
-    }
-    
-    .desktop-icon span {
-      display: block;
-      margin-top: 5px;
-      font-size: 12px;
-      color: var(--kde-text);
-    }
-    
-    .copy-notification {
-      position: fixed;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 4px;
-      pointer-events: none;
-      transition: opacity 0.3s;
-      z-index: 1000;
-    }
-    
-    .terminal {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 900px;
-      height: 500px;
-      background: rgba(0,0,0,0.9);
-      border-radius: 5px;
-      display: none;
-      overflow: hidden;
-    }
-    
-    .terminal-titlebar {
-      background: var(--kde-panel);
-      height: 30px;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      justify-content: space-between;
-    }
-    
-    .terminal-title {
-      color: var(--kde-text);
-      font-size: 12px;
-    }
-    
-    .window-controls {
-      display: flex;
-      gap: 5px;
-    }
-    
-    .window-button {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    
-    .window-button:hover {
-      opacity: 0.8;
-    }
-    
-    .minimize {
-      background: #f1b500;
-    }
-    
-    .maximize {
-      background: #95c96f;
-    }
-    
-    .close {
-      background: #ee6b5e;
-    }
-    
-    .terminal-content {
-      padding: 10px;
-      height: calc(100% - 50px);
-      font-family: monospace;
-      overflow-y: auto;
-      color: #0F0;
-      font-size: 12px;
-    }
-    
-    .terminal-content::-webkit-scrollbar {
-      width: 10px;
-    }
-    
-    .terminal-content::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.3);
-    }
-    
-    .terminal-content::-webkit-scrollbar-thumb {
-      background: rgba(61, 174, 233, 0.5);
-      border-radius: 5px;
-    }
-    
-    .terminal-content::-webkit-scrollbar-thumb:hover {
-      background: var(--kde-accent);
-    }
-    
-    .command-line {
-      display: flex;
-      align-items: center;
-      margin: 5px 0;
-    }
-    
-    .prompt {
-      color: #0F0;
-      margin-right: 10px;
-    }
-    
-    .command-input {
-      background: transparent;
-      border: none;
-      color: #0F0;
-      font-family: monospace;
-      font-size: 12px;
-      flex-grow: 1;
-      outline: none;
-    }
-    
-    .command-output {
-      color: #0F0;
-      margin: 5px 0;
-      white-space: pre-wrap;
-    }
-    
-    .link-item {
-      color: var(--kde-accent);
-      cursor: pointer;
-      text-decoration: none;
-      display: block;
-    }
-    
-    .link-item:hover {
-      text-decoration: underline;
-      background: rgba(61, 174, 233, 0.1);
-    }
-    
-    .matrix-rain {
-      position: absolute;
-      top: 30px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      color: #0F0;
-      font-family: monospace;
-      font-size: 14px;
-      line-height: 1;
-      overflow: hidden;
-    }
-    
-    .maximized {
-      top: 0 !important;
-      left: 0 !important;
-      transform: none !important;
-      width: 100vw !important;
-      height: calc(100vh - 40px) !important;
-    }
-    
-    .link-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      padding: 5px;
-    }
-    
-    .kde-notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--kde-panel);
-      border-radius: 8px;
-      padding: 15px;
-      width: 300px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      z-index: 1000;
-    }
-    
-    .kde-notification-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    
-    .kde-notification-title {
-      font-weight: bold;
-      color: var(--kde-text);
-    }
-    
-    .kde-notification-controls {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .kde-notification-control {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .kde-notification-progress {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid var(--kde-accent);
-      position: relative;
-    }
-    
-    .kde-notification-close {
-      background: #ee6b5e;
-      position: relative;
-    }
-    
-    .kde-notification-close:after {
-      content: '×';
-      color: rgba(0,0,0,0.5);
-      font-size: 14px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    
-    .kde-notification-progress svg {
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      width: 20px;
-      height: 20px;
-      transform: rotate(-90deg);
-    }
-    
-    .kde-notification-progress circle {
-      fill: none;
-      stroke: var(--kde-accent);
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-dasharray: 50.26548245743669;  
-      stroke-dashoffset: 0;
-    }
-    
-    .kde-notification-content {
-      color: var(--kde-text);
-      font-size: 14px;
-    }
-    
-    .splash-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: var(--kde-bg);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 1;
-      transition: opacity 0.5s ease-out;
-    }
-    
-    .splash-screen.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-    
-    .splash-logo {
-      width: 200px;
-      height: 200px;
-      margin-bottom: 40px;
-    }
-    
-    .loading-spinner {
-      width: 80px;
-      height: 80px;
-      border: 8px solid var(--kde-panel);
-      border-top: 8px solid var(--kde-accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .start-menu {
-      position: fixed;
-      bottom: 40px;
-      left: 0;
-      width: 400px;
-      background: var(--kde-panel);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px 8px 0 0;
-      display: none;
-      flex-direction: column;
-      z-index: 1000;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-    }
-    
-    .start-menu.active {
-      display: flex;
-    }
-    
-    .start-menu-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 15px;
-      color: var(--kde-text);
-      text-decoration: none;
-      gap: 12px;
-      transition: background-color 0.2s;
-    }
-    
-    .start-menu-item:hover {
-      background: rgba(61, 174, 233, 0.1);
-    }
-    
-    .start-menu-item img {
-      width: 24px;
-      height: 24px;
-    }
-    
-    .start-menu-item span {
-      flex-grow: 1;
-    }
-    
-    .start-menu-section {
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    
-    .start-menu-section:last-child {
-      border-bottom: none;
-    }
-    
-    .start-menu-header {
-      padding: 10px 15px;
-      color: var(--kde-accent);
-      font-size: 14px;
-      font-weight: bold;
-    }
-    
-    .login-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: var(--kde-bg);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-    }
-    
-    .login-logo {
-      width: 128px;
-      height: 128px;
-      margin-bottom: 20px;
-      border-radius: 64px;
-    }
-    
-    .login-button {
-      background: var(--kde-accent);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.2s;
-    }
-    
-    .login-button:hover {
-      background: #2b8fc5;
-    }
-    
-    .power-icon, .restart-icon, .logout-icon {
-      min-width: 24px;
-    }
-    
-    .login-welcome {
-      color: var(--kde-text);
-      font-size: 24px;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-    </style>
-    <script>document.addEventListener('DOMContentLoaded', () => {
+  <style>
+  :root {
+    --kde-bg: #1a1a1a;
+    --kde-panel: #2a2a2a;
+    --kde-text: #ffffff;
+    --kde-accent: #3daee9;
+    --gnome-bg: #2e3436;
+    --gnome-panel: #1c1f1f;
+    --gnome-text: #ffffff;
+    --gnome-accent: #3584e4;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans', sans-serif;
+    background-color: var(--kde-bg);
+    color: var(--kde-text);
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .taskbar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 40px;
+    background: var(--kde-panel);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.2);
+  }
+  
+  .gnome .taskbar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 60px;
+    background: rgba(28, 31, 31, 0.95);
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 30px;
+    z-index: 999;
+  }
+  
+  .gnome .taskbar .social-icons {
+    position: static;
+    left: auto;
+    transform: none;
+    display: flex;
+    gap: 20px;
+    padding: 0;
+  }
+  
+  .gnome .taskbar .social-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .gnome .taskbar .start-button {
+    position: static;
+    left: auto;
+    width: 32px;
+    height: 32px;
+    margin-right: 0;
+    z-index: auto;
+  }
+  
+  .gnome .taskbar .system-tray {
+    display: none;
+  }
+  
+  .start-button {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .social-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .social-icon:hover {
+    transform: scale(1.1);
+  }
+  
+  .system-tray {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .clock {
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+  }
+  
+  .clock-time {
+    font-weight: bold;
+  }
+  
+  .clock-date {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  
+  .gnome .clock {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  
+  .gnome .clock-date {
+    font-size: 14px;
+  }
+  
+  .desktop-icon {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .gnome .desktop-icon {
+    top: 52px;
+  }
+  
+  .terminal-icon {
+    top: 20px;
+    left: 20px;
+  }
+  
+  .gnome .terminal-icon {
+    left: 20px;
+  }
+  
+  .discord-copy {
+    top: 20px;
+    left: 100px;
+  }
+  
+  .gnome .discord-copy {
+    left: 100px;
+  }
+  
+  .desktop-icon img {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .desktop-icon span {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--kde-text);
+  }
+  
+  .copy-notification {
+    position: fixed;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1000;
+  }
+  
+  .terminal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    height: 500px;
+    background: rgba(0,0,0,0.9);
+    border-radius: 5px;
+    display: none;
+    overflow: hidden;
+  }
+  
+  .terminal-titlebar {
+    background: var(--kde-panel);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    justify-content: space-between;
+  }
+  
+  .terminal-title {
+    color: var(--kde-text);
+    font-size: 12px;
+  }
+  
+  .window-controls {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .window-button {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  
+  .window-button:hover {
+    opacity: 0.8;
+  }
+  
+  .minimize {
+    background: #f1b500;
+  }
+  
+  .maximize {
+    background: #95c96f;
+  }
+  
+  .close {
+    background: #ee6b5e;
+  }
+  
+  .terminal-content {
+    padding: 10px;
+    height: calc(100% - 50px);
+    font-family: monospace;
+    overflow-y: auto;
+    color: #0F0;
+    font-size: 12px;
+  }
+  
+  .terminal-content::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .terminal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  
+  .terminal-content::-webkit-scrollbar-thumb {
+    background: rgba(61, 174, 233, 0.5);
+    border-radius: 5px;
+  }
+  
+  .terminal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--kde-accent);
+  }
+  
+  .command-line {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+  }
+  
+  .prompt {
+    color: #0F0;
+    margin-right: 10px;
+  }
+  
+  .command-input {
+    background: transparent;
+    border: none;
+    color: #0F0;
+    font-family: monospace;
+    font-size: 12px;
+    flex-grow: 1;
+    outline: none;
+  }
+  
+  .command-output {
+    color: #0F0;
+    margin: 5px 0;
+    white-space: pre-wrap;
+  }
+  
+  .link-item {
+    color: var(--kde-accent);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .link-item:hover {
+    text-decoration: underline;
+    background: rgba(61, 174, 233, 0.1);
+  }
+  
+  .matrix-rain {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    color: #0F0;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1;
+    overflow: hidden;
+  }
+  
+  .maximized {
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    height: calc(100vh - 40px) !important;
+  }
+  
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 5px;
+  }
+  
+  .kde-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--kde-panel);
+    border-radius: 8px;
+    padding: 15px;
+    width: 300px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  
+  .kde-notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .kde-notification-title {
+    font-weight: bold;
+    color: var(--kde-text);
+  }
+  
+  .kde-notification-controls {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .kde-notification-control {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .kde-notification-progress {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--kde-accent);
+    position: relative;
+  }
+  
+  .kde-notification-close {
+    background: #ee6b5e;
+    position: relative;
+  }
+  
+  .kde-notification-close:after {
+    content: '×';
+    color: rgba(0,0,0,0.5);
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .kde-notification-progress svg {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 20px;
+    height: 20px;
+    transform: rotate(-90deg);
+  }
+  
+  .kde-notification-progress circle {
+    fill: none;
+    stroke: var(--kde-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 50.26548245743669;  
+    stroke-dashoffset: 0;
+  }
+  
+  .kde-notification-content {
+    color: var(--kde-text);
+    font-size: 14px;
+  }
+  
+  .splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--kde-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  .splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .splash-logo {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 40px;
+  }
+  
+  .loading-spinner {
+    width: 80px;
+    height: 80px;
+    border: 8px solid var(--kde-panel);
+    border-top: 8px solid var(--kde-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .start-menu {
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    width: 400px;
+    background: var(--kde-panel);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px 8px 0 0;
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
+  
+  .start-menu.active {
+    display: flex;
+  }
+  
+  .start-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    color: var(--kde-text);
+    text-decoration: none;
+    gap: 12px;
+    transition: background-color 0.2s;
+  }
+  
+  .start-menu-item:hover {
+    background: rgba(61, 174, 233, 0.1);
+  }
+  
+  .start-menu-item img {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .start-menu-item span {
+    flex-grow: 1;
+  }
+  
+  .start-menu-section {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  
+  .start-menu-section:last-child {
+    border-bottom: none;
+  }
+  
+  .start-menu-header {
+    padding: 10px 15px;
+    color: var(--kde-accent);
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--kde-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  }
+  
+  .login-logo {
+    width: 128px;
+    height: 128px;
+    margin-bottom: 20px;
+    border-radius: 64px;
+  }
+  
+  .login-button {
+    background: var(--kde-accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+  }
+  
+  .login-button:hover {
+    background: #2b8fc5;
+  }
+  
+  .power-icon, .restart-icon, .logout-icon {
+    min-width: 24px;
+  }
+  
+  .login-welcome {
+    color: var(--kde-text);
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  .gnome .top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    background: var(--gnome-panel);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 999;
+  }
+  
+  .gnome .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .gnome .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-right: 12px;
+  }
+  
+  .gnome .activities-button {
+    color: var(--gnome-text);
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 8px;
+  }
+  
+  .gnome .kde-notification {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 8px;
+    width: 300px;
+    bottom: auto;
+  }
+  
+  .selection-box {
+    position: fixed;
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    background: rgba(61, 174, 233, 0.1);
+    pointer-events: none;
+    z-index: 1000;
+  }
+  
+  .desktop-icon.selected {
+    background: rgba(61, 174, 233, 0.2);
+    border-radius: 4px;
+  }
+  
+  .gnome .desktop-icon.selected {
+    background: rgba(53, 132, 228, 0.2);
+    border-radius: 4px;
+  }
+  
+  .gnome .start-menu {
+    position: fixed;
+    top: 32px; 
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 32px - 80px); 
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    padding: 20px;
+    border: none;
+    border-radius: 0;
+    transform: none;
+    overflow-y: auto;
+    z-index: 998;
+  }
+  
+  .gnome .start-menu.active {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    align-items: start;
+  }
+  
+  .gnome .start-menu-section {
+    display: contents;
+  }
+  
+  .gnome .start-menu-header {
+    display: none;
+  }
+  
+  .gnome .start-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+  }
+  
+  .gnome .start-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .gnome .start-menu-item img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+  }
+  
+  .gnome .start-menu-item span {
+    font-size: 12px;
+    color: white;
+    word-wrap: break-word;
+    max-width: 100%;
+  }
+  
+  .gnome .start-menu-item.website-link img {
+    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12.5,7H11V13L16.2,16.2L17,14.9L12.5,12.2V7Z'/%3E%3C/svg%3E");
+  }
+  
+  .power-menu-container {
+    display: none;
+  }
+  
+  .gnome .power-menu-container {
+    position: relative;
+    display: block;
+    height: 100%;
+    margin-left: 8px;
+  }
+  
+  .gnome .power-menu {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 8px 0;
+    display: none;
+    min-width: 200px;
+  }
+  
+  .gnome .power-menu-container:hover .power-menu {
+    display: block;
+  }
+  
+  .gnome .power-menu-container:hover::before {
+    content: '';
+    position: absolute;
+    top: -32px;
+    left: 0;
+    right: 0;
+    height: 32px;
+  }
+  
+  .gnome .power-menu-container::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 10px;
+    background: transparent;
+  }
+  
+  .gnome .power-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    color: white;
+    text-decoration: none;
+    gap: 12px;
+    transition: background-color 0.2s;
+  }
+  
+  .gnome .power-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .gnome .power-menu-item svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .gnome .system-tray {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 8px;
+  }
+  
+  .login-settings {
+    width: 24px;
+    height: 24px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .login-settings:before {
+    content: '⚙️';
+    font-size: 16px;
+  }
+  
+  .login-screen .de-selection-dialog {
+    position: absolute; 
+    display: none;
+    flex-direction: column;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 12px;
+    gap: 8px;
+    bottom: 50px;
+    right: 20px;
+    z-index: 1000;
+  }
+  
+  .login-screen .de-selection-title {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .login-screen .de-selection-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .login-screen .de-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .login-screen .de-option:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .login-screen .de-option .checkmark {
+    width: 16px;
+    height: 16px;
+    display: none;
+  }
+  
+  .login-screen .de-option.selected .checkmark {
+    display: block;
+  }
+  </style>
+  <script>document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const splashScreen = document.querySelector('.splash-screen');
+      splashScreen.classList.add('fade-out');
       setTimeout(() => {
-        const splashScreen = document.querySelector('.splash-screen');
-        splashScreen.classList.add('fade-out');
-        setTimeout(() => {
-          splashScreen.remove();
-        }, 500);
-      }, 2000);
-      const updateClock = () => {
-        const now = new Date();
+        splashScreen.remove();
+      }, 500);
+    }, 2000);
+    const updateClock = () => {
+      const now = new Date();
+      if (document.body.classList.contains('gnome')) {
+        document.querySelector('.clock-time').textContent = now.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+        document.querySelector('.clock-date').textContent = now.toLocaleDateString('en-US', {
+          day: 'numeric',
+          month: 'short'
+        });
+      } else {
         document.querySelector('.clock-time').textContent = now.toLocaleTimeString('en-GB', {
           hour: '2-digit',
           minute: '2-digit'
@@ -520,180 +871,159 @@
           month: '2-digit',
           year: 'numeric'
         });
-      };
-      setInterval(updateClock, 1000);
-      updateClock();
-      const copyDiscord = () => {
-        navigator.clipboard.writeText('_xdan');
-        const notification = document.createElement('div');
-        notification.className = 'copy-notification';
-        notification.textContent = 'Copied to clipboard!';
-        document.body.appendChild(notification);
-        const updatePosition = e => {
-          notification.style.left = e.clientX + 10 + 'px';
-          notification.style.top = e.clientY + 10 + 'px';
+      }
+    };
+    setInterval(updateClock, 1000);
+    updateClock();
+    const copyDiscord = () => {
+      window.open('https://discord.com/users/634780914425004042', '_blank');
+    };
+    document.querySelector('.discord-copy').addEventListener('click', copyDiscord);
+    class Terminal {
+      constructor() {
+        this.terminal = document.querySelector('.terminal-content');
+        this.commands = {
+          'help': args => this.showHelp(args),
+          'ls': (args, isSudo) => this.listLinks(args, isSudo),
+          'clear': args => this.clear(args),
+          'whoami': (args, isSudo) => this.showWhoami(args, isSudo),
+          'date': args => this.showDate(args),
+          'cat': (args, isSudo) => this.catFile(args, isSudo),
+          'pwd': args => this.showPwd(args),
+          'echo': args => this.echo(args),
+          'uname': args => this.showUname(args),
+          'neofetch': args => this.showNeofetch(args),
+          'fastfetch': args => this.showNeofetch(args),
+          'cd': args => this.changeDirectory(args),
+          'sudo': args => this.sudo(args),
+          'gnome': args => this.switchToGnome(args),
+          'kde': args => this.switchToKde(args)
         };
-        document.addEventListener('mousemove', updatePosition);
-        setTimeout(() => {
-          notification.style.opacity = '0';
-          setTimeout(() => {
-            document.body.removeChild(notification);
-            document.removeEventListener('mousemove', updatePosition);
-          }, 300);
-        }, 2000);
-      };
-      document.querySelector('.discord-copy').addEventListener('click', copyDiscord);
-      class Terminal {
-        constructor() {
-          this.terminal = document.querySelector('.terminal-content');
-          this.commands = {
-            'help': args => this.showHelp(args),
-            'ls': (args, isSudo) => this.listLinks(args, isSudo),
-            'clear': args => this.clear(args),
-            'whoami': (args, isSudo) => this.showWhoami(args, isSudo),
-            'date': args => this.showDate(args),
-            'cat': (args, isSudo) => this.catFile(args, isSudo),
-            'pwd': args => this.showPwd(args),
-            'echo': args => this.echo(args),
-            'uname': args => this.showUname(args),
-            'neofetch': args => this.showNeofetch(args),
-            'fastfetch': args => this.showNeofetch(args),
-            'sudo': args => this.sudo(args),
-            'su': args => this.su(args),
-            'cd': args => this.changeDirectory(args)
-          };
-          this.commandHelp = {
-            'help': 'Usage: help [OPTION]\nDisplay information about builtin commands\n\nOptions:\n  --help\tdisplay this help and exit',
-            'ls': 'Usage: ls [OPTION]\nList directory contents\n\nOptions:\n  --help\tdisplay this help and exit\n  -l\t\tuse long listing format\n  -a\t\tdo not ignore entries starting with .',
-            'clear': 'Usage: clear [OPTION]\nClear the terminal screen\n\nOptions:\n  --help\tdisplay this help and exit',
-            'whoami': 'Usage: whoami [OPTION]\nPrint current user name\n\nOptions:\n  --help\tdisplay this help and exit',
-            'date': 'Usage: date [OPTION]\nPrint or set system date and time\n\nOptions:\n  --help\tdisplay this help and exit\n  -u\t\tprint UTC time',
-            'cat': 'Usage: cat [OPTION]... [FILE]...\nConcatenate FILE(s) to standard output\n\nOptions:\n  --help\tdisplay this help and exit\n  -n\t\tnumber all output lines',
-            'pwd': 'Usage: pwd [OPTION]\nPrint name of current working directory\n\nOptions:\n  --help\tdisplay this help and exit\n  -P\t\tavoid symlinks',
-            'echo': 'Usage: echo [OPTION]... [STRING]...\nDisplay a line of text\n\nOptions:\n  --help\tdisplay this help and exit\n  -n\t\tdo not output trailing newline',
-            'uname': 'Usage: uname [OPTION]...\nPrint system information\n\nOptions:\n  --help\tdisplay this help and exit\n  -a\t\tprint all information',
-            'neofetch': 'Usage: neofetch [OPTION]\nDisplay system information with ASCII art\n\nOptions:\n  --help\tdisplay this help and exit',
-            'fastfetch': 'Usage: fastfetch [OPTION]\nDisplay system information with ASCII art (neofetch alias)\n\nOptions:\n  --help\tdisplay this help and exit',
-            'sudo': 'Usage: sudo COMMAND\nExecute a command as superuser\n\nOptions:\n  --help\tdisplay this help and exit',
-            'su': 'Usage: su [OPTIONS] [USER]\nChange user ID or become superuser\n\nOptions:\n  --help\tdisplay this help and exit\n  -\t\tuse a login shell',
-            'cd': 'Usage: cd [DIRECTORY]\nChange the current directory\n\nOptions:\n  --help\tdisplay this help and exit'
-          };
-          this.sudoCommands = ['ls', 'cat', 'rm'];
-          this.isRoot = false;
-          this.currentDirectory = '/home/xdan';
-          this.initializeTerminal();
-        }
-        initializeTerminal() {
-          this.clear();
-          this.createNewCommandLine();
-        }
-        createNewCommandLine() {
-          const line = document.createElement('div');
-          line.className = 'command-line';
-          const prompt = document.createElement('span');
-          prompt.className = 'prompt';
-          prompt.textContent = 'xdan@kde:~$ ';
-          const input = document.createElement('input');
-          input.className = 'command-input';
-          input.type = 'text';
-          line.appendChild(prompt);
-          line.appendChild(input);
-          this.terminal.appendChild(line);
-          input.focus();
-          input.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-              const command = input.value.trim();
-              input.disabled = true;
-              this.executeCommand(command);
-            }
-          });
-        }
-        executeCommand(commandStr) {
-          const args = commandStr.trim().split(/\s+/);
-          const cmd = args.shift();
-          const output = document.createElement('div');
-          output.className = 'command-output';
-          if (cmd === '') {
-            this.createNewCommandLine();
-            return;
+        this.commandHelp = {
+          'help': 'Usage: help [OPTION]\nDisplay information about builtin commands\n\nOptions:\n  --help\tdisplay this help and exit',
+          'ls': 'Usage: ls [OPTION]\nList directory contents\n\nOptions:\n  --help\tdisplay this help and exit\n  -l\t\tuse long listing format\n  -a\t\tdo not ignore entries starting with .',
+          'clear': 'Usage: clear [OPTION]\nClear the terminal screen\n\nOptions:\n  --help\tdisplay this help and exit',
+          'whoami': 'Usage: whoami [OPTION]\nPrint current user name\n\nOptions:\n  --help\tdisplay this help and exit',
+          'date': 'Usage: date [OPTION]\nPrint or set system date and time\n\nOptions:\n  --help\tdisplay this help and exit\n  -u\t\tprint UTC time',
+          'cat': 'Usage: cat [OPTION]... [FILE]...\nConcatenate FILE(s) to standard output\n\nOptions:\n  --help\tdisplay this help and exit\n  -n\t\tnumber all output lines',
+          'pwd': 'Usage: pwd [OPTION]\nPrint name of current working directory\n\nOptions:\n  --help\tdisplay this help and exit\n  -P\t\tavoid symlinks',
+          'echo': 'Usage: echo [OPTION]... [STRING]...\nDisplay a line of text\n\nOptions:\n  --help\tdisplay this help and exit\n  -n\t\tdo not output trailing newline',
+          'uname': 'Usage: uname [OPTION]...\nPrint system information\n\nOptions:\n  --help\tdisplay this help and exit\n  -a\t\tprint all information',
+          'neofetch': 'Usage: neofetch [OPTION]\nDisplay system information with ASCII art\n\nOptions:\n  --help\tdisplay this help and exit',
+          'fastfetch': 'Usage: fastfetch [OPTION]\nDisplay system information with ASCII art (neofetch alias)\n\nOptions:\n  --help\tdisplay this help and exit',
+          'sudo': 'Usage: sudo COMMAND\nExecute a command as superuser\n\nOptions:\n  --help\tdisplay this help and exit',
+          'cd': 'Usage: cd [DIRECTORY]\nChange the current directory\n\nOptions:\n  --help\tdisplay this help and exit',
+          'gnome': 'Usage: gnome\nSwitch to GNOME desktop environment',
+          'kde': 'Usage: kde\nSwitch to KDE Plasma desktop environment'
+        };
+        this.sudoCommands = ['ls', 'cat', 'rm'];
+        this.isRoot = false;
+        this.currentDirectory = '/home/xdan';
+        this.initializeTerminal();
+      }
+      initializeTerminal() {
+        this.clear();
+        this.createNewCommandLine();
+      }
+      createNewCommandLine() {
+        const line = document.createElement('div');
+        line.className = 'command-line';
+        const prompt = document.createElement('span');
+        prompt.className = 'prompt';
+        prompt.textContent = 'xdan@kde:~$ ';
+        const input = document.createElement('input');
+        input.className = 'command-input';
+        input.type = 'text';
+        line.appendChild(prompt);
+        line.appendChild(input);
+        this.terminal.appendChild(line);
+        input.focus();
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') {
+            const command = input.value.trim();
+            input.disabled = true;
+            this.executeCommand(command);
           }
-          if (cmd === 'help' && args[0] === '--help') {
-            this.showEasterEgg();
-          } else if (this.commands[cmd]) {
-            if (args[0] === '--help') {
-              output.textContent = this.commandHelp[cmd];
-            } else {
-              const result = this.commands[cmd](args, false);
-              if (result) {
-                output.innerHTML = result;
-              }
-            }
+        });
+      }
+      executeCommand(commandStr) {
+        const args = commandStr.trim().split(/\s+/);
+        let cmd = args.shift();
+        const output = document.createElement('div');
+        output.className = 'command-output';
+        if (cmd === '') {
+          this.createNewCommandLine();
+          return;
+        }
+        if (cmd === 'sudo') {
+          if (args[0] === '--help') {
+            output.textContent = this.commandHelp[cmd];
           } else {
-            output.textContent = `Command not found: ${cmd}. Type 'help' for available commands.`;
+            const result = this.sudo(args);
+            output.innerHTML = result;
           }
-          this.terminal.appendChild(output);
-          this.createNewCommandLine();
-        }
-        clear() {
-          this.terminal.innerHTML = '';
-          return '';
-        }
-        showHelp(args) {
-          return `Available commands:
-    help    - Display information about builtin commands
-    ls      - List directory contents
-    clear   - Clear the terminal screen
-    whoami  - Print current user name
-    date    - Print or set the system date and time
-    cat     - Concatenate files and print on the standard output
-    pwd     - Print name of current working directory
-    echo    - Display a line of text
-    uname   - Print system information
-    neofetch - Display system information with ASCII art
-    cd      - Change directory`;
-        }
-        listLinks(args, isSudo) {
-          const regularLinks = [
-            ['triangles', 'https://xdan.uk/triangles'],
-            ['shapes', 'https://xdan.uk/shapes'], 
-            ['constellations', 'https://xdan.uk/constellations'],
-            ['ram', 'https://xdan.uk/ram'],
-            ['Keyboard', 'https://xdan.uk/Keyboard'],
-            ['Go11', 'https://xdan.uk/Go11']
-          ];
-    
-          let links = [];
-    
-          if (this.currentDirectory === '/home/xdan') {
-            links = [...regularLinks];
-            if (isSudo) {
-              links.push(['.config', '#'], ['.secrets', '#'], ['.ssh', '#']);
+        } else if (cmd === 'help') {
+          if (args[0] === '--help') {
+            output.textContent = this.commandHelp[cmd];
+            this.showHelpEasterEgg();
+          } else {
+            const result = this.commands[cmd](args, false);
+            if (result) {
+              output.innerHTML = result;
             }
-            const grid = document.createElement('div');
-            grid.className = 'link-grid';
-            
-            regularLinks.forEach(([name, url]) => {
-              const link = document.createElement('a');
-              link.href = url;
-              link.className = 'link-item';
-              link.target = '_blank';
-              link.textContent = name;
-              grid.appendChild(link);
-            });
-            
-            const secretText = document.createElement('span');
-            secretText.className = 'link-item';
-            secretText.textContent = 'secret';
-            grid.appendChild(secretText);
-            
-            return grid.outerHTML;
-          } else if (this.currentDirectory === '/home/xdan/secret') {
-            links = [['Finale [WIP]', 'https://drive.google.com/file/d/1QnkPj91vGo2q7DDy6T6VyHnWs_B-G3z3/view?usp=sharing']];
           }
-    
+        } else if (this.commands[cmd]) {
+          if (args[0] === '--help') {
+            output.textContent = this.commandHelp[cmd];
+          } else {
+            const result = this.commands[cmd](args, false);
+            if (result) {
+              output.innerHTML = result;
+            }
+          }
+        } else {
+          output.textContent = `Command not found: ${cmd}. Type 'help' for available commands.`;
+        }
+        this.terminal.appendChild(output);
+        this.createNewCommandLine();
+      }
+      clear() {
+        this.terminal.innerHTML = '';
+        return '';
+      }
+      showHelp(args) {
+        if (args && args[0] === '--help') {
+          this.showHelpEasterEgg();
+        }
+        return `Available commands:
+  help    - Display information about builtin commands
+  ls      - List directory contents
+  clear   - Clear the terminal screen
+  whoami  - Print current user name
+  date    - Print or set the system date and time
+  cat     - Concatenate files and print on the standard output
+  pwd     - Print name of current working directory
+  echo    - Display a line of text
+  uname   - Print system information
+  neofetch - Display system information with ASCII art
+  cd      - Change directory
+  sudo    - Execute a command as superuser
+  gnome   - Switch to GNOME desktop environment
+  kde     - Switch to KDE Plasma desktop environment`;
+      }
+      listLinks(args, isSudo) {
+        const regularLinks = [['triangles', 'https://xdan.uk/triangles'], ['shapes', 'https://xdan.uk/shapes'], ['constellations', 'https://xdan.uk/constellations'], ['ram', 'https://xdan.uk/ram'], ['Keyboard', 'https://xdan.uk/Keyboard'], ['Go11', 'https://xdan.uk/Go11']];
+        let links = [];
+        if (args && args[0] === 'secret') {
+          links = [['Finale [WIP]', 'https://drive.google.com/file/d/1QnkPj91vGo2q7DDy6T6VyHnWs_B-G3z3/view?usp=sharing']];
+        } else if (this.currentDirectory === '/home/xdan') {
+          links = [...regularLinks];
+          if (isSudo) {
+            links.push(['.config', '#'], ['.secrets', '#'], ['.ssh', '#']);
+          }
           const grid = document.createElement('div');
           grid.className = 'link-grid';
-          links.forEach(([name, url]) => {
+          regularLinks.forEach(([name, url]) => {
             const link = document.createElement('a');
             link.href = url;
             link.className = 'link-item';
@@ -701,446 +1031,848 @@
             link.textContent = name;
             grid.appendChild(link);
           });
-          
+          const secretText = document.createElement('span');
+          secretText.className = 'link-item';
+          secretText.textContent = 'secret';
+          grid.appendChild(secretText);
           return grid.outerHTML;
+        } else if (this.currentDirectory === '/home/xdan/secret') {
+          links = [['Finale [WIP]', 'https://drive.google.com/file/d/1QnkPj91vGo2q7DDy6T6VyHnWs_B-G3z3/view?usp=sharing']];
         }
-        showWhoami(args, isSudo) {
-          return isSudo ? 'root' : 'xdan';
+        const grid = document.createElement('div');
+        grid.className = 'link-grid';
+        links.forEach(([name, url]) => {
+          const link = document.createElement('a');
+          link.href = url;
+          link.className = 'link-item';
+          link.target = '_blank';
+          link.textContent = name;
+          grid.appendChild(link);
+        });
+        return grid.outerHTML;
+      }
+      showWhoami(args, isSudo) {
+        return isSudo ? 'root' : 'xdan';
+      }
+      showDate() {
+        return new Date().toLocaleString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          year: 'numeric',
+          hour12: false
+        });
+      }
+      catFile(args, isSudo) {
+        if (!args || args.length === 0) {
+          return 'cat: missing operand\nTry \'cat --help\' for more information.';
         }
-        showDate() {
-          return new Date().toLocaleString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            year: 'numeric',
-            hour12: false
-          });
+        const validFiles = {
+          'readme.txt': 'XDan Music Production\nRunning on XDanOS 1.0.0\nVisit https://xdan.uk for more information.',
+          'about.txt': 'British/South African Music Producer\nCreating electronic music and interactive experiences on XDanOS.',
+          'links.txt': 'Discord: https://discord.gg/5rSDcZvJAf\nYouTube: https://youtube.com/@_XDan'
+        };
+        if (isSudo) {
+          validFiles['.config'] = 'XDanOS 1.0.0 Configuration\nDo not share!';
+          validFiles['.secrets'] = 'Nothing to see here...\nPowered by XDanOS';
+          validFiles['.ssh'] = 'SSH keys and configurations\nXDanOS secure shell';
         }
-        catFile(args, isSudo) {
-          if (!args || args.length === 0) {
-            return 'cat: missing operand\nTry \'cat --help\' for more information.';
-          }
-          const validFiles = {
-            'readme.txt': 'XDan Music Production\nRunning on XDanOS 1.0.0\nVisit https://xdan.uk for more information.',
-            'about.txt': 'British/South African Music Producer\nCreating electronic music and interactive experiences on XDanOS.',
-            'links.txt': 'Discord: https://discord.gg/5rSDcZvJAf\nYouTube: https://youtube.com/@_XDan'
-          };
-          if (isSudo) {
-            validFiles['.config'] = 'XDanOS 1.0.0 Configuration\nDo not share!';
-            validFiles['.secrets'] = 'Nothing to see here...\nPowered by XDanOS';
-            validFiles['.ssh'] = 'SSH keys and configurations\nXDanOS secure shell';
-          }
-          if (validFiles[args[0]]) {
-            return validFiles[args[0]];
-          }
-          return `cat: ${args[0]}: No such file or directory`;
+        if (validFiles[args[0]]) {
+          return validFiles[args[0]];
         }
-        showPwd() {
-          return this.currentDirectory;
+        return `cat: ${args[0]}: No such file or directory`;
+      }
+      showPwd() {
+        return this.currentDirectory;
+      }
+      echo(args) {
+        if (!args || args.length === 0) {
+          return '';
         }
-        echo(args) {
-          if (!args || args.length === 0) {
+        return args.join(' ');
+      }
+      showUname() {
+        return 'Linux kde 6.1.0-10-amd64 #1 SMP PREEMPT_DYNAMIC XDanOS 1.0.0 (2024-01-13) x86_64 GNU/Linux';
+      }
+      showEasterEgg() {
+        const notification = document.createElement('div');
+        notification.className = 'kde-notification';
+        const header = document.createElement('div');
+        header.className = 'kde-notification-header';
+        const title = document.createElement('div');
+        title.className = 'kde-notification-title';
+        title.textContent = 'Easter egg found!';
+        const controls = document.createElement('div');
+        controls.className = 'kde-notification-controls';
+        const progress = document.createElement('div');
+        progress.className = 'kde-notification-progress';
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '10');
+        circle.setAttribute('cy', '10');
+        circle.setAttribute('r', '8');
+        svg.appendChild(circle);
+        progress.appendChild(svg);
+        const close = document.createElement('button');
+        close.className = 'kde-notification-control kde-notification-close';
+        const content = document.createElement('div');
+        content.className = 'kde-notification-content';
+        content.textContent = 'You needed help with help.';
+        controls.appendChild(progress);
+        controls.appendChild(close);
+        header.appendChild(title);
+        header.appendChild(controls);
+        notification.appendChild(header);
+        notification.appendChild(content);
+        document.body.appendChild(notification);
+        let timeoutId;
+        const circumference = 2 * Math.PI * 8;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = '0';
+        const startTimeout = () => {
+          circle.style.transition = 'none';
+          circle.style.strokeDashoffset = '0';
+          circle.offsetHeight;
+          circle.style.transition = 'stroke-dashoffset 5s linear';
+          circle.style.strokeDashoffset = `${circumference}`;
+          timeoutId = setTimeout(() => {
+            notification.remove();
+          }, 5000);
+        };
+        notification.addEventListener('mouseenter', () => {
+          clearTimeout(timeoutId);
+          circle.style.transition = 'none';
+          circle.style.strokeDashoffset = '0';
+        });
+        notification.addEventListener('mouseleave', () => {
+          startTimeout();
+        });
+        notification.querySelector('.kde-notification-close').addEventListener('click', () => {
+          notification.remove();
+        });
+        startTimeout();
+      }
+      sudo(args) {
+        if (!args.length) {
+          return 'sudo: no command specified';
+        }
+        const cmd = args[0];
+        if (cmd === 'rm' && args.join(' ') === 'rm -rf /') {
+          this.showLemonEasterEgg();
+          return 'Error: lemons';
+        }
+        if (!this.commands[cmd]) {
+          return `sudo: command not found: ${cmd}`;
+        }
+        const result = this.commands[cmd](args.slice(1), true);
+        return `[sudo] executing ${cmd}...\n${result}`;
+      }
+      changeDirectory(args) {
+        if (!args || args.length === 0) {
+          this.currentDirectory = '/home/xdan';
+          return '';
+        }
+        const dir = args[0];
+        if (dir === 'secret') {
+          if (this.currentDirectory === '/home/xdan') {
+            this.currentDirectory = '/home/xdan/secret';
             return '';
           }
-          return args.join(' ');
         }
-        showUname() {
-          return 'Linux kde 6.1.0-10-amd64 #1 SMP PREEMPT_DYNAMIC XDanOS 1.0.0 (2024-01-13) x86_64 GNU/Linux';
-        }
-        showEasterEgg() {
-          const notification = document.createElement('div');
-          notification.className = 'kde-notification';
-          const header = document.createElement('div');
-          header.className = 'kde-notification-header';
-          const title = document.createElement('div');
-          title.className = 'kde-notification-title';
-          title.textContent = 'Easter egg found!';
-          const controls = document.createElement('div');
-          controls.className = 'kde-notification-controls';
-          const progress = document.createElement('div');
-          progress.className = 'kde-notification-progress';
-          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', '10');
-          circle.setAttribute('cy', '10');
-          circle.setAttribute('r', '8');
-          svg.appendChild(circle);
-          progress.appendChild(svg);
-          const close = document.createElement('button');
-          close.className = 'kde-notification-control kde-notification-close';
-          const content = document.createElement('div');
-          content.className = 'kde-notification-content';
-          content.textContent = 'You needed help with help.';
-          controls.appendChild(progress);
-          controls.appendChild(close);
-          header.appendChild(title);
-          header.appendChild(controls);
-          notification.appendChild(header);
-          notification.appendChild(content);
-          document.body.appendChild(notification);
-          let timeoutId;
-          const circumference = 2 * Math.PI * 8;
-          circle.style.strokeDasharray = `${circumference} ${circumference}`;
-          circle.style.strokeDashoffset = '0';
-          const startTimeout = () => {
-            circle.style.transition = 'none';
-            circle.style.strokeDashoffset = '0';
-            circle.offsetHeight;
-            circle.style.transition = 'stroke-dashoffset 5s linear';
-            circle.style.strokeDashoffset = `${circumference}`;
-            timeoutId = setTimeout(() => {
-              notification.remove();
-            }, 5000);
-          };
-          notification.addEventListener('mouseenter', () => {
-            clearTimeout(timeoutId);
-            circle.style.transition = 'none';
-            circle.style.strokeDashoffset = '0';
-          });
-          notification.addEventListener('mouseleave', () => {
-            startTimeout();
-          });
-          close.addEventListener('click', () => {
-            notification.remove();
-          });
-          startTimeout();
-        }
-        sudo(args) {
-          if (!args.length) {
-            return 'sudo: no command specified';
-          }
-          const cmd = args[0];
-          if (cmd === 'rm' && args.join(' ') === 'rm -rf /') {
-            this.showLemonEasterEgg();
-            return 'Error: lemons';
-          }
-          if (!this.commands[cmd]) {
-            return `sudo: command not found: ${cmd}`;
-          }
-          const result = this.commands[cmd](args.slice(1), true);
-          return `[sudo] executing ${cmd}...\n${result}`;
-        }
-        su(args) {
-          if (args.length && args[0] !== 'root') {
-            return 'su: user does not exist';
-          }
-          return 'su: Authentication failure';
-        }
-        showLemonEasterEgg() {
-          const notification = document.createElement('div');
-          notification.className = 'kde-notification';
-          const header = document.createElement('div');
-          header.className = 'kde-notification-header';
-          const title = document.createElement('div');
-          title.className = 'kde-notification-title';
-          title.textContent = 'Easter egg found!';
-          const controls = document.createElement('div');
-          controls.className = 'kde-notification-controls';
-          const progress = document.createElement('div');
-          progress.className = 'kde-notification-progress';
-          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', '10');
-          circle.setAttribute('cy', '10');
-          circle.setAttribute('r', '8');
-          svg.appendChild(circle);
-          progress.appendChild(svg);
-          const close = document.createElement('button');
-          close.className = 'kde-notification-control kde-notification-close';
-          const content = document.createElement('div');
-          content.className = 'kde-notification-content';
-          content.textContent = 'You feel something inside of you... something lemony.';
-          controls.appendChild(progress);
-          controls.appendChild(close);
-          header.appendChild(title);
-          header.appendChild(controls);
-          notification.appendChild(header);
-          notification.appendChild(content);
-          document.body.appendChild(notification);
-          let timeoutId;
-          const circumference = 2 * Math.PI * 8;
-          circle.style.strokeDasharray = `${circumference} ${circumference}`;
-          circle.style.strokeDashoffset = '0';
-          const startTimeout = () => {
-            circle.style.transition = 'none';
-            circle.style.strokeDashoffset = '0';
-            circle.offsetHeight;
-            circle.style.transition = 'stroke-dashoffset 5s linear';
-            circle.style.strokeDashoffset = `${circumference}`;
-            timeoutId = setTimeout(() => {
-              notification.remove();
-            }, 5000);
-          };
-          notification.addEventListener('mouseenter', () => {
-            clearTimeout(timeoutId);
-            circle.style.transition = 'none';
-            circle.style.strokeDashoffset = '0';
-          });
-          notification.addEventListener('mouseleave', () => {
-            startTimeout();
-          });
-          close.addEventListener('click', () => {
-            notification.remove();
-          });
-          startTimeout();
-        }
-        changeDirectory(args) {
-          if (!args || args.length === 0) {
+        if (dir === '..') {
+          if (this.currentDirectory === '/home/xdan/secret') {
             this.currentDirectory = '/home/xdan';
             return '';
           }
-          const dir = args[0];
-          if (dir === 'secret') {
-            if (this.currentDirectory === '/home/xdan') {
-              this.currentDirectory = '/home/xdan/secret';
-              return '';
-            }
-          }
-          if (dir === '..') {
-            if (this.currentDirectory === '/home/xdan/secret') {
-              this.currentDirectory = '/home/xdan';
-              return '';
-            }
-          }
-          return `cd: ${dir}: No such file or directory`;
         }
+        return `cd: ${dir}: No such file or directory`;
       }
-      let terminalInstance = null;
-      document.querySelector('.terminal-icon').addEventListener('click', () => {
+      showNeofetch(args) {
+        return `   aa 
+    Daa aD                                       OS: XDanOS 4.20 "Toaster Edition"
+    Daa DD
+    Daa D                                        Host: Potato Model 3000
+    DD  DD                               DDDD
+   DDD  D  D                      DDDDDDanaaaD   Kernel: 6.9.4-lol-custom
+   DDDD D   DD D               DannDDDDDDDDDDD
+   DDDD D    DDD            DaannaaaaDDDDDDDD    Uptime: ∞ hours (because time is a lie)
+  DDDDD D      DDDD        DaaaaaaaDDDaDD
+  DDDD DD       DDDD     DaaaaaaaDDDaaD          Packages: 42 (The Answer to Life, the Universe, and Everything)
+  DDDD DD         DDDD  DaDDDaaaDDanD
+  D DDD DD          DDDDDDDDDDDDDDaaaa             Shell: sneksh (Snake Edition)
+  DDDDDD DD          DaDDDDDDDDDDaaa
+  DaDDDD DD         DaaDDaaD     DaD DaanaD        CPU: Intel Cereal Box @ 1337MHz (2 cores, 4 imaginary threads)
+  DaaaDD DD       DDDDD DaaD        DaaDDDaaaaD      
+  DDDDDD aa   DDaDD  DaD        DaaDDDaaaaD      
+  DDDDDD Da  DaaDDDDaD            Daaaaaaaaa     Memory: 69MB RAM (plus 420MB swap)
+  DDDDDD DDDDDDaaaD                           DDaD 
+  DDDDDDDDDDDDDaaaD                                D  Theme: Cyberpunk-Unicorn-DarkMode-XL [GTK2/3]
+  DDDDDDDDDDDDDaD                                   
+  DDDDDDDDDDD                                    Aliens Spotted: 3 (they used \`sudo\` before we did)
+   DDDDDaD                                     
+  DD                                            Bug Fixes: 0 (works as intended)
+  
+  
+                                                AI Overlords Approval: Pending...
+  
+  
+                                                "When life gives you lemons, \`sudo rm -rf /\`." - XDanOS Team`;
+      }
+      switchToGnome(args) {
         const terminal = document.querySelector('.terminal');
-        terminal.style.display = 'block';
-        if (!terminalInstance) {
-          terminalInstance = new Terminal();
+        if (terminal) {
+          terminal.style.display = 'none';
+          terminal.classList.remove('maximized');
+          if (terminalInstance) {
+            terminalInstance.clear();
+            terminalInstance = null;
+          }
         }
-      });
-      document.querySelector('.close').addEventListener('click', () => {
-        const terminal = document.querySelector('.terminal');
-        terminal.style.display = 'none';
-        terminal.classList.remove('maximized');
-        if (terminalInstance) {
-          terminalInstance.clear();
-          terminalInstance = null;
-        }
-      });
-      document.querySelector('.minimize').addEventListener('click', () => {
-        const terminal = document.querySelector('.terminal');
-        terminal.style.display = 'none';
-        terminal.classList.remove('maximized');
-      });
-      document.querySelector('.maximize').addEventListener('click', () => {
-        const terminal = document.querySelector('.terminal');
-        terminal.classList.toggle('maximized');
-      });
-      const startButton = document.querySelector('.start-button');
-      const startMenu = document.querySelector('.start-menu');
-      const startTerminal = document.querySelector('#start-terminal');
-      startButton.addEventListener('click', e => {
-        e.stopPropagation();
-        startMenu.classList.toggle('active');
-      });
-      document.addEventListener('click', e => {
-        if (!startMenu.contains(e.target) && !startButton.contains(e.target)) {
+        const startMenu = document.querySelector('.start-menu');
+        if (startMenu) {
           startMenu.classList.remove('active');
         }
-      });
-      startTerminal.addEventListener('click', e => {
-        e.preventDefault();
-        const terminal = document.querySelector('.terminal');
-        terminal.style.display = 'block';
-        if (!terminalInstance) {
-          terminalInstance = new Terminal();
-        }
+        const notification = document.createElement('div');
+        notification.className = 'kde-notification';
+        notification.innerHTML = `
+          <div class="kde-notification-header">
+            <div class="kde-notification-title">Desktop Environment</div>
+            <div class="kde-notification-controls">
+              <div class="kde-notification-progress">
+                <svg><circle cx="10" cy="10" r="8"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="kde-notification-content">Switching to GNOME...</div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          const splashScreen = document.createElement('div');
+          splashScreen.className = 'splash-screen';
+          splashScreen.innerHTML = `
+            <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
+            <div class="loading-spinner"></div>
+          `;
+          document.body.appendChild(splashScreen);
+          setTimeout(() => {
+            document.body.classList.add('gnome');
+            if (!document.querySelector('.top-bar')) {
+              const topBar = document.createElement('div');
+              topBar.className = 'top-bar';
+              topBar.innerHTML = `
+                <div class="top-bar-left">
+                  <div class="activities-button">Activities</div>
+                </div>
+                <div class="top-bar-right">
+                  <div class="system-tray">
+                    <svg class="wifi-icon" width="24" height="24" viewBox="0 0 24 24">
+                      <path fill="white" d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21"/>
+                      <path fill="white" d="M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3"/>
+                    </svg>
+                    
+                    <svg class="volume-icon" width="24" height="24" viewBox="0 0 24 24">
+                      <path fill="white" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+                    </svg>
+                    
+                    <div class="clock">
+                      <div class="clock-time"></div>
+                      <div class="clock-date"></div>
+                    </div>
+                    
+                    <div class="power-menu-container">
+                      <svg class="power-menu-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
+                      </svg>
+                      <div class="power-menu">
+                        <a href="https://xdan.co.uk" target="_blank" class="power-menu-item">
+                          <svg class="power-icon" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
+                          </svg>
+                          <span>Power Off</span>
+                        </a>
+                        <a href="#" class="power-menu-item" id="gnome-restart-button">
+                          <svg class="restart-icon" width="24" height="24" viewBox="0 0 24 24">
+                            <path fill="white" d="M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z"/>
+                        </svg>
+                        <span>Restart</span>
+                      </a>
+                      <a href="#" class="power-menu-item" id="gnome-logout-button">
+                        <svg class="logout-icon" width="24" height="24" viewBox="0 0 24 24">
+                          <path fill="white" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+                        </svg>
+                        <span>Log Out</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              `;
+              document.body.appendChild(topBar);
+              updateClock();
+            }
+            splashScreen.classList.add('fade-out');
+            const startMenu = document.querySelector('.start-menu');
+            startMenu.innerHTML = `
+              <a href="#" class="start-menu-item" id="start-terminal">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Konsole_icon.svg/256px-Konsole_icon.svg.png">
+                <span>Terminal</span>
+              </a>
+              
+              <a href="https://xdan.uk/triangles" target="_blank" class="start-menu-item website-link">
+                <img>
+                <span>Triangles</span>
+              </a>
+              <a href="https://xdan.uk/shapes" target="_blank" class="start-menu-item website-link">
+                <img>
+                <span>Shapes</span>
+              </a>
+              <a href="https://xdan.uk/constellations" target="_blank" class="start-menu-item website-link">
+                <img>
+                <span>Constellations</span>
+              </a>
+              <a href="https://xdan.uk/ram" target="_blank" class="start-menu-item website-link">
+                <img>
+                <span>Ram</span>
+              </a>
+              <a href="https://xdan.uk/Keyboard" target="_blank" class="start-menu-item website-link">
+                <img>
+                <span>Keyboard</span>
+              </a>
+              <a href="https://xdan.uk/Go11" target="_blank" class="start-menu-item website-link">
+                <img>
+                <span>Go11</span>
+              </a>
+  
+              <a href="https://discord.gg/5rSDcZvJAf" target="_blank" class="start-menu-item">
+                <img src="https://xdan.uk/uploads/icon2.png">
+                <span>Discord</span>
+              </a>
+              <a href="https://youtube.com/@_XDan" target="_blank" class="start-menu-item">
+                <img src="https://xdan.uk/uploads/icon3.png">
+                <span>YouTube</span>
+              </a>
+              <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank" class="start-menu-item">
+                <img src="https://xdan.uk/uploads/icon5.png">
+                <span>Spotify</span>
+              </a>
+              <a href="https://soundcloud.com/xdanfr" target="_blank" class="start-menu-item">
+                <img src="https://xdan.uk/uploads/icon6.png">
+                <span>SoundCloud</span>
+              </a>
+              <a href="https://instagram.com/yourfav.dan" target="_blank" class="start-menu-item">
+                <img src="https://xdan.uk/uploads/icon7.png">
+                <span>Instagram</span>
+              </a>
+              <a href="https://tiktok.com/@xdanfr" target="_blank" class="start-menu-item">
+                <img src="https://xdan.uk/uploads/icon8.png">
+                <span>TikTok</span>
+              </a>
+              <a href="#" class="start-menu-item discord-copy">
+                <img src="https://xdan.uk/uploads/icon9.png">
+                <span>Add me on Discord!</span>
+              </a>
+            `;
+            document.getElementById('start-terminal').addEventListener('click', e => {
+              e.preventDefault();
+              const terminal = document.querySelector('.terminal');
+              terminal.style.display = 'block';
+              if (!terminalInstance) {
+                terminalInstance = new Terminal();
+              }
+              startMenu.classList.remove('active');
+            });
+            setTimeout(() => {
+              splashScreen.remove();
+              notification.remove();
+            }, 500);
+          }, 2000);
+        }, 1000);
+        return 'Initiating GNOME desktop environment...';
+      }
+      switchToKde(args) {
+        const notification = document.createElement('div');
+        notification.className = 'kde-notification';
+        notification.innerHTML = `
+          <div class="kde-notification-header">
+            <div class="kde-notification-title">Desktop Environment</div>
+            <div class="kde-notification-controls">
+              <div class="kde-notification-progress">
+                <svg><circle cx="10" cy="10" r="8"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="kde-notification-content">Switching to KDE Plasma...</div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          const splashScreen = document.createElement('div');
+          splashScreen.className = 'splash-screen';
+          splashScreen.innerHTML = `
+            <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
+            <div class="loading-spinner"></div>
+          `;
+          document.body.appendChild(splashScreen);
+          setTimeout(() => {
+            document.body.classList.remove('gnome');
+            const topBar = document.querySelector('.top-bar');
+            if (topBar) topBar.remove();
+            splashScreen.classList.add('fade-out');
+            setTimeout(() => {
+              splashScreen.remove();
+              notification.remove();
+            }, 500);
+          }, 2000);
+        }, 1000);
+        return 'Initiating KDE Plasma desktop environment...';
+      }
+      showHelpEasterEgg() {
+        const notification = document.createElement('div');
+        notification.className = 'kde-notification';
+        notification.innerHTML = `
+          <div class="kde-notification-header">
+            <div class="kde-notification-title">Achievement unlocked: Helped</div>
+            <div class="kde-notification-controls">
+              <div class="kde-notification-progress">
+                <svg><circle cx="10" cy="10" r="8"/></svg>
+              </div>
+              <button class="kde-notification-control kde-notification-close"></button>
+            </div>
+          </div>
+          <div class="kde-notification-content">Did you really need help with help?</div>
+        `;
+        document.body.appendChild(notification);
+        let timeoutId;
+        const circle = notification.querySelector('circle');
+        const circumference = 2 * Math.PI * 8;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = '0';
+        const startTimeout = () => {
+          circle.style.transition = 'none';
+          circle.style.strokeDashoffset = '0';
+          circle.offsetHeight;
+          circle.style.transition = 'stroke-dashoffset 5s linear';
+          circle.style.strokeDashoffset = `${circumference}`;
+          timeoutId = setTimeout(() => {
+            notification.remove();
+          }, 5000);
+        };
+        notification.addEventListener('mouseenter', () => {
+          clearTimeout(timeoutId);
+          circle.style.transition = 'none';
+          circle.style.strokeDashoffset = '0';
+        });
+        notification.addEventListener('mouseleave', () => {
+          startTimeout();
+        });
+        notification.querySelector('.kde-notification-close').addEventListener('click', () => {
+          notification.remove();
+        });
+        startTimeout();
+      }
+      showLemonEasterEgg() {
+        const notification = document.createElement('div');
+        notification.className = 'kde-notification';
+        notification.innerHTML = `
+          <div class="kde-notification-header">
+            <div class="kde-notification-title">Achievement unlocked: Lemon</div>
+            <div class="kde-notification-controls">
+              <div class="kde-notification-progress">
+                <svg><circle cx="10" cy="10" r="8"/></svg>
+              </div>
+              <button class="kde-notification-control kde-notification-close"></button>
+            </div>
+          </div>
+          <div class="kde-notification-content">You feel something inside of you, something lemony.</div>
+        `;
+        document.body.appendChild(notification);
+        let timeoutId;
+        const circle = notification.querySelector('circle');
+        const circumference = 2 * Math.PI * 8;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = '0';
+        const startTimeout = () => {
+          circle.style.transition = 'none';
+          circle.style.strokeDashoffset = '0';
+          circle.offsetHeight;
+          circle.style.transition = 'stroke-dashoffset 5s linear';
+          circle.style.strokeDashoffset = `${circumference}`;
+          timeoutId = setTimeout(() => {
+            notification.remove();
+          }, 5000);
+        };
+        notification.addEventListener('mouseenter', () => {
+          clearTimeout(timeoutId);
+          circle.style.transition = 'none';
+          circle.style.strokeDashoffset = '0';
+        });
+        notification.addEventListener('mouseleave', () => {
+          startTimeout();
+        });
+        notification.querySelector('.kde-notification-close').addEventListener('click', () => {
+          notification.remove();
+        });
+        startTimeout();
+      }
+    }
+    let terminalInstance = null;
+    document.querySelector('.login-settings').addEventListener('click', () => {
+      const dialog = document.querySelector('.login-screen .de-selection-dialog');
+      dialog.style.display = dialog.style.display === 'flex' ? 'none' : 'flex';
+      const isGnome = document.body.classList.contains('gnome');
+      document.querySelector('#kde-option').classList.toggle('selected', !isGnome);
+      document.querySelector('#gnome-option').classList.toggle('selected', isGnome);
+    });
+    document.addEventListener('click', e => {
+      const dialog = document.querySelector('.login-screen .de-selection-dialog');
+      const settingsIcon = document.querySelector('.login-settings');
+      if (dialog && !dialog.contains(e.target) && !settingsIcon.contains(e.target)) {
+        dialog.style.display = 'none';
+      }
+    });
+    document.getElementById('kde-option').addEventListener('click', () => {
+      document.body.classList.remove('gnome');
+      document.querySelector('.login-screen .de-selection-dialog').style.display = 'none';
+      document.querySelector('#kde-option').classList.add('selected');
+      document.querySelector('#gnome-option').classList.remove('selected');
+    });
+    document.getElementById('gnome-option').addEventListener('click', () => {
+      document.body.classList.add('gnome');
+      document.querySelector('.login-screen .de-selection-dialog').style.display = 'none';
+      document.querySelector('#kde-option').classList.remove('selected');
+      document.querySelector('#gnome-option').classList.add('selected');
+    });
+    document.querySelector('.terminal-icon').addEventListener('click', () => {
+      const terminal = document.querySelector('.terminal');
+      terminal.style.display = 'block';
+      if (!terminalInstance) {
+        terminalInstance = new Terminal();
+      }
+    });
+    document.querySelector('.close').addEventListener('click', () => {
+      const terminal = document.querySelector('.terminal');
+      terminal.style.display = 'none';
+      terminal.classList.remove('maximized');
+      if (terminalInstance) {
+        terminalInstance.clear();
+        terminalInstance = null;
+      }
+    });
+    document.querySelector('.minimize').addEventListener('click', () => {
+      const terminal = document.querySelector('.terminal');
+      terminal.style.display = 'none';
+      terminal.classList.remove('maximized');
+    });
+    document.querySelector('.maximize').addEventListener('click', () => {
+      const terminal = document.querySelector('.terminal');
+      terminal.classList.toggle('maximized');
+    });
+    const startButton = document.querySelector('.start-button');
+    const startMenu = document.querySelector('.start-menu');
+    const startTerminal = document.querySelector('#start-terminal');
+    startButton.addEventListener('click', e => {
+      e.stopPropagation();
+      startMenu.classList.toggle('active');
+    });
+    document.addEventListener('click', e => {
+      if (!startMenu.contains(e.target) && !startButton.contains(e.target)) {
         startMenu.classList.remove('active');
-      });
-      document.getElementById('restart-button').addEventListener('click', e => {
+      }
+    });
+    startTerminal.addEventListener('click', e => {
+      e.preventDefault();
+      const terminal = document.querySelector('.terminal');
+      terminal.style.display = 'block';
+      if (!terminalInstance) {
+        terminalInstance = new Terminal();
+      }
+      startMenu.classList.remove('active');
+    });
+    document.getElementById('restart-button').addEventListener('click', e => {
+      e.preventDefault();
+      location.reload();
+      startMenu.classList.remove('active');
+    });
+    document.getElementById('logout-button').addEventListener('click', e => {
+      e.preventDefault();
+      const loginScreen = document.querySelector('.login-screen');
+      loginScreen.style.display = 'flex';
+      startMenu.classList.remove('active');
+    });
+    document.querySelector('.login-button').addEventListener('click', () => {
+      const loginScreen = document.querySelector('.login-screen');
+      loginScreen.style.display = 'none';
+      const splashScreen = document.createElement('div');
+      splashScreen.className = 'splash-screen';
+      splashScreen.innerHTML = `
+        <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
+        <div class="loading-spinner"></div>
+      `;
+      document.body.appendChild(splashScreen);
+      setTimeout(() => {
+        splashScreen.classList.add('fade-out');
+        setTimeout(() => {
+          splashScreen.remove();
+        }, 500);
+      }, 2000);
+    });
+    document.addEventListener('click', e => {
+      if (e.target.closest('#gnome-restart-button')) {
         e.preventDefault();
         location.reload();
-        startMenu.classList.remove('active');
-      });
-      document.getElementById('logout-button').addEventListener('click', e => {
+      } else if (e.target.closest('#gnome-logout-button')) {
         e.preventDefault();
         const loginScreen = document.querySelector('.login-screen');
         loginScreen.style.display = 'flex';
-        startMenu.classList.remove('active');
+      }
+    });
+    let isSelecting = false;
+    let startX = 0;
+    let startY = 0;
+    let selectionBox = null;
+    document.addEventListener('mousedown', e => {
+      if (e.target === document.body) {
+        isSelecting = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+          icon.classList.remove('selected');
+        });
+        if (!selectionBox) {
+          selectionBox = document.createElement('div');
+          selectionBox.className = 'selection-box';
+          document.body.appendChild(selectionBox);
+        }
+        selectionBox.style.left = `${startX}px`;
+        selectionBox.style.top = `${startY}px`;
+        selectionBox.style.width = '0';
+        selectionBox.style.height = '0';
+        selectionBox.style.display = 'block';
+      }
+    });
+    document.addEventListener('mousemove', e => {
+      if (isSelecting && selectionBox) {
+        const currentX = e.clientX;
+        const currentY = e.clientY;
+        const width = Math.abs(currentX - startX);
+        const height = Math.abs(currentY - startY);
+        const left = currentX > startX ? startX : currentX;
+        const top = currentY > startY ? startY : currentY;
+        selectionBox.style.left = `${left}px`;
+        selectionBox.style.top = `${top}px`;
+        selectionBox.style.width = `${width}px`;
+        selectionBox.style.height = `${height}px`;
+        const selectionRect = {
+          left: left,
+          top: top,
+          right: left + width,
+          bottom: top + height
+        };
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+          const iconRect = icon.getBoundingClientRect();
+          const intersects = !(selectionRect.left > iconRect.right || selectionRect.right < iconRect.left || selectionRect.top > iconRect.bottom || selectionRect.bottom < iconRect.top);
+          if (intersects) {
+            icon.classList.add('selected');
+          } else {
+            icon.classList.remove('selected');
+          }
+        });
+      }
+    });
+    document.addEventListener('mouseup', () => {
+      if (isSelecting) {
+        isSelecting = false;
+        if (selectionBox) {
+          selectionBox.style.display = 'none';
+        }
+        document.querySelectorAll('.desktop-icon').forEach(icon => {
+          icon.classList.remove('selected');
+        });
+      }
+    });
+    const preventSelection = element => {
+      element.addEventListener('mousedown', e => {
+        e.stopPropagation();
       });
-      document.querySelector('.login-button').addEventListener('click', () => {
-        const loginScreen = document.querySelector('.login-screen');
-        loginScreen.style.display = 'none';
-        const splashScreen = document.createElement('div');
-        splashScreen.className = 'splash-screen';
-        splashScreen.innerHTML = `
-          <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
-          <div class="loading-spinner"></div>
-        `;
-        document.body.appendChild(splashScreen);
-        setTimeout(() => {
-          splashScreen.classList.add('fade-out');
-          setTimeout(() => {
-            splashScreen.remove();
-          }, 500);
-        }, 2000);
-      });
-    });</script>
-    </head>
-    <body>
-    
-    <div class="splash-screen">
-      <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
-      <div class="loading-spinner"></div>
-    </div>
-    
-    <div class="desktop-icon terminal-icon">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Konsole_icon.svg/256px-Konsole_icon.svg.png">
-      <span>Terminal</span>
-    </div>
-    
-    <div class="desktop-icon discord-copy">
-      <img src="https://xdan.uk/uploads/icon9.png">
-      <span>Copy Discord</span>
-    </div>
-    
-    <div class="terminal">
-      <div class="terminal-titlebar">
-        <div class="terminal-title">Terminal - Matrix Rain</div>
-        <div class="window-controls">
-          <button class="window-button minimize"></button>
-          <button class="window-button maximize"></button>
-          <button class="window-button close"></button>
-        </div>
+    };
+    document.querySelectorAll('.desktop-icon, .terminal, .taskbar, .start-menu, .top-bar').forEach(preventSelection);
+  });</script>
+  </head>
+  <body>
+  
+  <div class="splash-screen">
+    <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
+    <div class="loading-spinner"></div>
+  </div>
+  
+  <div class="desktop-icon terminal-icon">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Konsole_icon.svg/256px-Konsole_icon.svg.png">
+    <span>Terminal</span>
+  </div>
+  
+  <div class="desktop-icon discord-copy">
+    <img src="https://xdan.uk/uploads/icon9.png">
+    <span>Add me on Discord!</span>
+  </div>
+  
+  <div class="terminal">
+    <div class="terminal-titlebar">
+      <div class="terminal-title">Terminal - Matrix Rain</div>
+      <div class="window-controls">
+        <button class="window-button minimize"></button>
+        <button class="window-button maximize"></button>
+        <button class="window-button close"></button>
       </div>
-      <div class="terminal-content"></div>
     </div>
-    
-    <div class="taskbar">
+    <div class="terminal-content"></div>
+  </div>
+  
+  <div class="taskbar">
+    <div class="social-icons">
       <img src="https://xdan.uk/uploads/profile.jpg" class="start-button">
+      <a href="https://discord.gg/5rSDcZvJAf" target="_blank">
+        <img src="https://xdan.uk/uploads/icon2.png" class="social-icon">
+      </a>
+      <a href="https://youtube.com/@_XDan" target="_blank">
+        <img src="https://xdan.uk/uploads/icon3.png" class="social-icon">
+      </a>
+      <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank">
+        <img src="https://xdan.uk/uploads/icon5.png" class="social-icon">
+      </a>
+      <a href="https://soundcloud.com/xdanfr" target="_blank">
+        <img src="https://xdan.uk/uploads/icon6.png" class="social-icon">
+      </a>
+      <a href="https://instagram.com/yourfav.dan" target="_blank">
+        <img src="https://xdan.uk/uploads/icon7.png" class="social-icon">
+      </a>
+      <a href="https://tiktok.com/@xdanfr" target="_blank">
+        <img src="https://xdan.uk/uploads/icon8.png" class="social-icon">
+      </a>
+    </div>
+  
+    <div class="system-tray">
+      <svg class="wifi-icon" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="white" d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21"/>
+        <path fill="white" d="M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3"/>
+      </svg>
       
-      <div class="social-icons">
-        <a href="https://discord.gg/5rSDcZvJAf" target="_blank">
-          <img src="https://xdan.uk/uploads/icon2.png" class="social-icon">
-        </a>
-        <a href="https://youtube.com/@_XDan" target="_blank">
-          <img src="https://xdan.uk/uploads/icon3.png" class="social-icon">
-        </a>
-        <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank">
-          <img src="https://xdan.uk/uploads/icon5.png" class="social-icon">
-        </a>
-        <a href="https://soundcloud.com/xdanfr" target="_blank">
-          <img src="https://xdan.uk/uploads/icon6.png" class="social-icon">
-        </a>
-        <a href="https://instagram.com/yourfav.dan" target="_blank">
-          <img src="https://xdan.uk/uploads/icon7.png" class="social-icon">
-        </a>
-        <a href="https://tiktok.com/@xdanfr" target="_blank">
-          <img src="https://xdan.uk/uploads/icon8.png" class="social-icon">
-        </a>
+      <svg class="volume-icon" width="24" height="24" viewBox="0 0 24 24">
+        <path fill="white" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+      </svg>
+      
+      <div class="clock">
+        <div class="clock-time"></div>
+        <div class="clock-date"></div>
       </div>
+    </div>
+  </div>
+  
+  <div class="start-menu">
+    <div class="start-menu-section">
+      <div class="start-menu-header">Applications</div>
+      <a href="#" class="start-menu-item" id="start-terminal">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Konsole_icon.svg/256px-Konsole_icon.svg.png">
+        <span>Terminal</span>
+      </a>
+    </div>
     
-      <div class="system-tray">
-        <svg class="wifi-icon" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="white" d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21"/>
-          <path fill="white" d="M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3"/>
+    <div class="start-menu-section">
+      <div class="start-menu-header">Projects</div>
+      <a href="https://xdan.uk/triangles" target="_blank" class="start-menu-item">
+        <span>Triangles</span>
+      </a>
+      <a href="https://xdan.uk/shapes" target="_blank" class="start-menu-item">
+        <span>Shapes</span>
+      </a>
+      <a href="https://xdan.uk/constellations" target="_blank" class="start-menu-item">
+        <span>Constellations</span>
+      </a>
+      <a href="https://xdan.uk/ram" target="_blank" class="start-menu-item">
+        <span>Ram</span>
+      </a>
+      <a href="https://xdan.uk/Keyboard" target="_blank" class="start-menu-item">
+        <span>Keyboard</span>
+      </a>
+      <a href="https://xdan.uk/Go11" target="_blank" class="start-menu-item">
+        <span>Go11</span>
+      </a>
+    </div>
+  
+    <div class="start-menu-section">
+      <div class="start-menu-header">Social</div>
+      <a href="https://discord.gg/5rSDcZvJAf" target="_blank" class="start-menu-item">
+        <img src="https://xdan.uk/uploads/icon2.png">
+        <span>Discord</span>
+      </a>
+      <a href="https://youtube.com/@_XDan" target="_blank" class="start-menu-item">
+        <img src="https://xdan.uk/uploads/icon3.png">
+        <span>YouTube</span>
+      </a>
+      <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank" class="start-menu-item">
+        <img src="https://xdan.uk/uploads/icon5.png">
+        <span>Spotify</span>
+      </a>
+      <a href="https://soundcloud.com/xdanfr" target="_blank" class="start-menu-item">
+        <img src="https://xdan.uk/uploads/icon6.png">
+        <span>SoundCloud</span>
+      </a>
+      <a href="https://instagram.com/yourfav.dan" target="_blank" class="start-menu-item">
+        <img src="https://xdan.uk/uploads/icon7.png">
+        <span>Instagram</span>
+      </a>
+      <a href="https://tiktok.com/@xdanfr" target="_blank" class="start-menu-item">
+        <img src="https://xdan.uk/uploads/icon8.png">
+        <span>TikTok</span>
+      </a>
+    </div>
+  
+    <div class="start-menu-section">
+      <div class="start-menu-header">Power</div>
+      <a href="https://xdan.co.uk" target="_blank" class="start-menu-item">
+        <svg class="power-icon" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
         </svg>
-        
-        <svg class="volume-icon" width="24" height="24" viewBox="0 0 24 24">
-          <path fill="white" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+        <span>Power Off</span>
+      </a>
+      <a href="#" class="start-menu-item" id="restart-button">
+        <svg class="restart-icon" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="white" d="M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z"/>
         </svg>
-        
-        <div class="clock">
-          <div class="clock-time"></div>
-          <div class="clock-date"></div>
+        <span>Restart</span>
+      </a>
+      <a href="#" class="start-menu-item" id="logout-button">
+        <svg class="logout-icon" width="24" height="24" viewBox="0 0 24 24">
+          <path fill="white" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+        </svg>
+        <span>Log Out</span>
+      </a>
+    </div>
+  </div>
+  
+  <div class="login-screen" style="display: none">
+    <div class="login-welcome">Welcome to xdan.uk!</div>
+    <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="login-logo">
+    <button class="login-button">Log In</button>
+    <div class="login-settings"></div>
+    <div class="de-selection-dialog">
+      <div class="de-selection-title">Desktop Environment</div>
+      <div class="de-selection-options">
+        <div class="de-option selected" id="kde-option">
+          <span>KDE Plasma</span>
+          <svg class="checkmark" viewBox="0 0 24 24">
+            <path fill="white" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+          </svg>
+        </div>
+        <div class="de-option" id="gnome-option">
+          <span>GNOME</span>
+          <svg class="checkmark" viewBox="0 0 24 24">
+            <path fill="white" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+          </svg>
         </div>
       </div>
     </div>
-    
-    <div class="start-menu">
-      <div class="start-menu-section">
-        <div class="start-menu-header">Applications</div>
-        <a href="#" class="start-menu-item" id="start-terminal">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Konsole_icon.svg/256px-Konsole_icon.svg.png">
-          <span>Terminal</span>
-        </a>
-      </div>
-      
-      <div class="start-menu-section">
-        <div class="start-menu-header">Projects</div>
-        <a href="https://xdan.uk/triangles" target="_blank" class="start-menu-item">
-          <span>Triangles</span>
-        </a>
-        <a href="https://xdan.uk/shapes" target="_blank" class="start-menu-item">
-          <span>Shapes</span>
-        </a>
-        <a href="https://xdan.uk/constellations" target="_blank" class="start-menu-item">
-          <span>Constellations</span>
-        </a>
-        <a href="https://xdan.uk/ram" target="_blank" class="start-menu-item">
-          <span>Ram</span>
-        </a>
-        <a href="https://xdan.uk/Keyboard" target="_blank" class="start-menu-item">
-          <span>Keyboard</span>
-        </a>
-        <a href="https://xdan.uk/Go11" target="_blank" class="start-menu-item">
-          <span>Go11</span>
-        </a>
-      </div>
-    
-      <div class="start-menu-section">
-        <div class="start-menu-header">Social</div>
-        <a href="https://discord.gg/5rSDcZvJAf" target="_blank" class="start-menu-item">
-          <img src="https://xdan.uk/uploads/icon2.png">
-          <span>Discord</span>
-        </a>
-        <a href="https://youtube.com/@_XDan" target="_blank" class="start-menu-item">
-          <img src="https://xdan.uk/uploads/icon3.png">
-          <span>YouTube</span>
-        </a>
-        <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank" class="start-menu-item">
-          <img src="https://xdan.uk/uploads/icon5.png">
-          <span>Spotify</span>
-        </a>
-        <a href="https://soundcloud.com/xdanfr" target="_blank" class="start-menu-item">
-          <img src="https://xdan.uk/uploads/icon6.png">
-          <span>SoundCloud</span>
-        </a>
-        <a href="https://instagram.com/yourfav.dan" target="_blank" class="start-menu-item">
-          <img src="https://xdan.uk/uploads/icon7.png">
-          <span>Instagram</span>
-        </a>
-        <a href="https://tiktok.com/@xdanfr" target="_blank" class="start-menu-item">
-          <img src="https://xdan.uk/uploads/icon8.png">
-          <span>TikTok</span>
-        </a>
-      </div>
-    
-      <div class="start-menu-section">
-        <div class="start-menu-header">Power</div>
-        <a href="https://xdan.co.uk" target="_blank" class="start-menu-item">
-          <svg class="power-icon" width="24" height="24" viewBox="0 0 24 24">
-            <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
-          </svg>
-          <span>Power Off</span>
-        </a>
-        <a href="#" class="start-menu-item" id="restart-button">
-          <svg class="restart-icon" width="24" height="24" viewBox="0 0 24 24">
-            <path fill="white" d="M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z"/>
-          </svg>
-          <span>Restart</span>
-        </a>
-        <a href="#" class="start-menu-item" id="logout-button">
-          <svg class="logout-icon" width="24" height="24" viewBox="0 0 24 24">
-            <path fill="white" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
-          </svg>
-          <span>Log Out</span>
-        </a>
-      </div>
-    </div>
-    
-    <div class="login-screen" style="display: none">
-      <div class="login-welcome">Welcome to xdan.uk!</div>
-      <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="login-logo">
-      <button class="login-button">Log In</button>
-    </div>
-    
-    </body></html>
+  </div>
+  
+  </body>
+  </html>
