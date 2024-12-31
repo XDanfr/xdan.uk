@@ -19,6 +19,50 @@
     color: var(--kde-text);
     height: 100vh;
     overflow: hidden;
+    position: relative;
+  }
+  
+  .wallpaper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, #1a1a1a, #3daee9);
+    z-index: -1;
+    overflow: hidden;
+  }
+  
+  .wallpaper-logo {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    opacity: 0.1;
+    transform-origin: center;
+  }
+  
+  .wallpaper-logo:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    transform: rotate(15deg);
+  }
+  
+  .wallpaper-logo:nth-child(2) {
+    top: 30%;
+    left: 60%;
+    transform: rotate(-25deg);
+  }
+  
+  .wallpaper-logo:nth-child(3) {
+    top: 60%;
+    left: 30%;
+    transform: rotate(45deg);
+  }
+  
+  .wallpaper-logo:nth-child(4) {
+    top: 70%;
+    left: 70%;
+    transform: rotate(-15deg);
   }
   
   .taskbar {
@@ -163,6 +207,11 @@
     left: 100px;
   }
   
+  .soundcloud-icon {
+    top: 20px;
+    left: 260px;
+  }
+  
   .desktop-icon img {
     width: 48px;
     height: 48px;
@@ -199,6 +248,19 @@
     overflow: hidden;
   }
   
+  .soundcloud-window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 220px;
+    background: rgba(0,0,0,0.9);
+    border-radius: 5px;
+    display: none;
+    overflow: hidden;
+  }
+  
   .terminal-titlebar {
     background: var(--kde-panel);
     height: 30px;
@@ -206,6 +268,11 @@
     align-items: center;
     padding: 0 10px;
     justify-content: space-between;
+  }
+  
+  .soundcloud-content {
+    height: calc(100% - 30px);
+    margin-top: 30px;
   }
   
   .terminal-title {
@@ -327,6 +394,16 @@
     transform: none !important;
     width: 100vw !important;
     height: calc(100vh - 40px) !important;
+  }
+  
+  .gnome .terminal.maximized {
+    top: 32px !important;  
+    height: calc(100vh - 72px) !important;  
+  }
+  
+  .gnome .soundcloud-window.maximized {
+    top: 32px !important;  
+    height: calc(100vh - 72px) !important;
   }
   
   .link-grid {
@@ -1383,49 +1460,18 @@
               }
               startMenu.classList.remove('active');
             });
-            setTimeout(() => {
-              splashScreen.remove();
-              notification.remove();
-            }, 500);
-          }, 2000);
-        }, 1000);
-        return 'Initiating GNOME desktop environment...';
-      }
-      switchToKde(args) {
-        const notification = document.createElement('div');
-        notification.className = 'kde-notification';
-        notification.innerHTML = `
-          <div class="kde-notification-header">
-            <div class="kde-notification-title">Desktop Environment</div>
-            <div class="kde-notification-controls">
-              <div class="kde-notification-progress">
-                <svg><circle cx="10" cy="10" r="8"/></svg>
-              </div>
-            </div>
-          </div>
-          <div class="kde-notification-content">Switching to KDE Plasma...</div>
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-          const splashScreen = document.createElement('div');
-          splashScreen.className = 'splash-screen';
-          splashScreen.innerHTML = `
-            <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
-            <div class="loading-spinner"></div>
-          `;
-          document.body.appendChild(splashScreen);
-          setTimeout(() => {
-            document.body.classList.remove('gnome');
-            const topBar = document.querySelector('.top-bar');
-            if (topBar) topBar.remove();
             splashScreen.classList.add('fade-out');
             setTimeout(() => {
               splashScreen.remove();
               notification.remove();
             }, 500);
-          }, 2000);
+          }, 1000);
         }, 1000);
-        return 'Initiating KDE Plasma desktop environment...';
+        return 'Initiating GNOME desktop environment...';
+      }
+      switchToKde(args) {
+        location.reload();
+        return 'Restarting system...';
       }
       showHelpEasterEgg() {
         const notification = document.createElement('div');
@@ -1536,12 +1582,160 @@
       document.querySelector('.login-screen .de-selection-dialog').style.display = 'none';
       document.querySelector('#kde-option').classList.add('selected');
       document.querySelector('#gnome-option').classList.remove('selected');
+      setTimeout(() => location.reload(), 500);
     });
     document.getElementById('gnome-option').addEventListener('click', () => {
       document.body.classList.add('gnome');
       document.querySelector('.login-screen .de-selection-dialog').style.display = 'none';
       document.querySelector('#kde-option').classList.remove('selected');
       document.querySelector('#gnome-option').classList.add('selected');
+      const splashScreen = document.createElement('div');
+      splashScreen.className = 'splash-screen';
+      splashScreen.innerHTML = `
+        <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
+        <div class="loading-spinner"></div>
+      `;
+      document.body.appendChild(splashScreen);
+      setTimeout(() => {
+        const terminal = document.querySelector('.terminal');
+        if (terminal) {
+          terminal.style.display = 'none';
+          terminal.classList.remove('maximized');
+          if (terminalInstance) {
+            terminalInstance.clear();
+            terminalInstance = null;
+          }
+        }
+        const startMenu = document.querySelector('.start-menu');
+        startMenu.innerHTML = `
+          <a href="#" class="start-menu-item" id="start-terminal">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Konsole_icon.svg/256px-Konsole_icon.svg.png">
+            <span>Terminal</span>
+          </a>
+          
+          <a href="https://xdan.uk/triangles" target="_blank" class="start-menu-item website-link">
+            <img>
+            <span>Triangles</span>
+          </a>
+          <a href="https://xdan.uk/shapes" target="_blank" class="start-menu-item website-link">
+            <img>
+            <span>Shapes</span>
+          </a>
+          <a href="https://xdan.uk/constellations" target="_blank" class="start-menu-item website-link">
+            <img>
+            <span>Constellations</span>
+          </a>
+          <a href="https://xdan.uk/ram" target="_blank" class="start-menu-item website-link">
+            <img>
+            <span>Ram</span>
+          </a>
+          <a href="https://xdan.uk/Keyboard" target="_blank" class="start-menu-item website-link">
+            <img>
+            <span>Keyboard</span>
+          </a>
+          <a href="https://xdan.uk/Go11" target="_blank" class="start-menu-item website-link">
+            <img>
+            <span>Go11</span>
+          </a>
+  
+          <a href="https://discord.gg/5rSDcZvJAf" target="_blank" class="start-menu-item">
+            <img src="https://xdan.uk/uploads/icon2.png">
+            <span>Discord</span>
+          </a>
+          <a href="https://youtube.com/@_XDan" target="_blank" class="start-menu-item">
+            <img src="https://xdan.uk/uploads/icon3.png">
+            <span>YouTube</span>
+          </a>
+          <a href="https://open.spotify.com/artist/0YCoeqoiDdWGEanD2b3pp9" target="_blank" class="start-menu-item">
+            <img src="https://xdan.uk/uploads/icon5.png">
+            <span>Spotify</span>
+          </a>
+          <a href="https://soundcloud.com/xdanfr" target="_blank" class="start-menu-item">
+            <img src="https://xdan.uk/uploads/icon6.png">
+            <span>SoundCloud</span>
+          </a>
+          <a href="https://instagram.com/yourfav.dan" target="_blank" class="start-menu-item">
+            <img src="https://xdan.uk/uploads/icon7.png">
+            <span>Instagram</span>
+          </a>
+          <a href="https://tiktok.com/@xdanfr" target="_blank" class="start-menu-item">
+            <img src="https://xdan.uk/uploads/icon8.png">
+            <span>TikTok</span>
+          </a>
+          <a href="#" class="start-menu-item discord-copy">
+            <img src="https://xdan.uk/uploads/icon9.png">
+            <span>Add me on Discord!</span>
+          </a>
+        `;
+        if (!document.querySelector('.top-bar')) {
+          const topBar = document.createElement('div');
+          topBar.className = 'top-bar';
+          topBar.innerHTML = `
+            <div class="top-bar-left">
+              <div class="activities-button">Activities</div>
+            </div>
+            <div class="top-bar-right">
+              <div class="system-tray">
+                <svg class="wifi-icon" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="white" d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21"/>
+                  <path fill="white" d="M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3"/>
+                </svg>
+                
+                <svg class="volume-icon" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="white" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+                </svg>
+                
+                <div class="clock">
+                  <div class="clock-time"></div>
+                  <div class="clock-date"></div>
+                </div>
+                
+                <div class="power-menu-container">
+                  <svg class="power-menu-icon" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
+                  </svg>
+                  <div class="power-menu">
+                    <a href="https://xdan.co.uk" target="_blank" class="power-menu-item">
+                      <svg class="power-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
+                      </svg>
+                      <span>Power Off</span>
+                    </a>
+                    <a href="#" class="power-menu-item" id="gnome-restart-button">
+                      <svg class="restart-icon" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="white" d="M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z"/>
+                    </svg>
+                    <span>Restart</span>
+                  </a>
+                  <a href="#" class="power-menu-item" id="gnome-logout-button">
+                    <svg class="logout-icon" width="24" height="24" viewBox="0 0 24 24">
+                      <path fill="white" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+                    </svg>
+                    <span>Log Out</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(topBar);
+        }
+        updateClock();
+        document.getElementById('start-terminal').addEventListener('click', e => {
+          e.preventDefault();
+          const terminal = document.querySelector('.terminal');
+          terminal.style.display = 'block';
+          if (!terminalInstance) {
+            terminalInstance = new Terminal();
+          }
+          startMenu.classList.remove('active');
+        });
+        splashScreen.classList.add('fade-out');
+        setTimeout(() => {
+          splashScreen.remove();
+          const loginScreen = document.querySelector('.login-screen');
+          loginScreen.style.display = 'none';
+        }, 500);
+      }, 2000);
     });
     document.querySelector('.terminal-icon').addEventListener('click', () => {
       const terminal = document.querySelector('.terminal');
@@ -1610,6 +1804,59 @@
         <div class="loading-spinner"></div>
       `;
       document.body.appendChild(splashScreen);
+      if (document.body.classList.contains('gnome') && !document.querySelector('.top-bar')) {
+        const topBar = document.createElement('div');
+        topBar.className = 'top-bar';
+        topBar.innerHTML = `
+          <div class="top-bar-left">
+            <div class="activities-button">Activities</div>
+          </div>
+          <div class="top-bar-right">
+            <div class="system-tray">
+              <svg class="wifi-icon" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="white" d="M12,21L15.6,16.2C14.6,15.45 13.35,15 12,15C10.65,15 9.4,15.45 8.4,16.2L12,21"/>
+                <path fill="white" d="M12,3C7.95,3 4.21,4.34 1.2,6.6L3,9C5.5,7.12 8.62,6 12,6C15.38,6 18.5,7.12 21,9L22.8,6.6C19.79,4.34 16.05,3 12,3"/>
+              </svg>
+              
+              <svg class="volume-icon" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="white" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"/>
+              </svg>
+              
+              <div class="clock">
+                <div class="clock-time"></div>
+                <div class="clock-date"></div>
+              </div>
+              
+              <div class="power-menu-container">
+                <svg class="power-menu-icon" width="24" height="24" viewBox="0 0 24 24">
+                  <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
+                </svg>
+                <div class="power-menu">
+                  <a href="https://xdan.co.uk" target="_blank" class="power-menu-item">
+                    <svg class="power-icon" width="24" height="24" viewBox="0 0 24 24">
+                      <path fill="white" d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13"/>
+                    </svg>
+                    <span>Power Off</span>
+                  </a>
+                  <a href="#" class="power-menu-item" id="gnome-restart-button">
+                    <svg class="restart-icon" width="24" height="24" viewBox="0 0 24 24">
+                      <path fill="white" d="M12,4C14.1,4 16.1,4.8 17.6,6.3C20.7,9.4 20.7,14.5 17.6,17.6C15.8,19.5 13.3,20.2 10.9,19.9L11.4,17.9C13.1,18.1 14.9,17.5 16.2,16.2C18.5,13.9 18.5,10.1 16.2,7.7C15.1,6.6 13.5,6 12,6V10.6L7,5.6L12,0.6V4M6.3,17.6C3.7,15 3.3,11 5.1,7.9L6.6,9.4C5.5,11.6 5.9,14.4 7.8,16.2C8.3,16.7 8.9,17.1 9.6,17.4L9,19.4C8,19 7.1,18.4 6.3,17.6Z"/>
+                  </svg>
+                  <span>Restart</span>
+                </a>
+                <a href="#" class="power-menu-item" id="gnome-logout-button">
+                  <svg class="logout-icon" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="white" d="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"/>
+                  </svg>
+                  <span>Log Out</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(topBar);
+        updateClock();
+      }
       setTimeout(() => {
         splashScreen.classList.add('fade-out');
         setTimeout(() => {
@@ -1696,10 +1943,34 @@
         e.stopPropagation();
       });
     };
-    document.querySelectorAll('.desktop-icon, .terminal, .taskbar, .start-menu, .top-bar').forEach(preventSelection);
+    document.querySelectorAll('.desktop-icon, .terminal, .taskbar, .start-menu, .top-bar, .soundcloud-window').forEach(preventSelection);
+    document.querySelector('.soundcloud-icon').addEventListener('click', () => {
+      const soundcloudWindow = document.querySelector('.soundcloud-window');
+      soundcloudWindow.style.display = 'block';
+    });
+    document.querySelector('.soundcloud-window .close').addEventListener('click', () => {
+      const soundcloudWindow = document.querySelector('.soundcloud-window');
+      soundcloudWindow.style.display = 'none';
+      soundcloudWindow.classList.remove('maximized');
+    });
+    document.querySelector('.soundcloud-window .minimize').addEventListener('click', () => {
+      const soundcloudWindow = document.querySelector('.soundcloud-window');
+      soundcloudWindow.style.display = 'none';
+      soundcloudWindow.classList.remove('maximized');
+    });
+    document.querySelector('.soundcloud-window .maximize').addEventListener('click', () => {
+      const soundcloudWindow = document.querySelector('.soundcloud-window');
+      soundcloudWindow.classList.toggle('maximized');
+    });
   });</script>
   </head>
   <body>
+  <div class="wallpaper">
+    <img src="https://xdan.uk/uploads/profile.jpg" class="wallpaper-logo">
+    <img src="https://xdan.uk/uploads/profile.jpg" class="wallpaper-logo">
+    <img src="https://xdan.uk/uploads/profile.jpg" class="wallpaper-logo">
+    <img src="https://xdan.uk/uploads/profile.jpg" class="wallpaper-logo">
+  </div>
   
   <div class="splash-screen">
     <img src="https://xdan.uk/uploads/profile.jpg" alt="XDan Logo" class="splash-logo">
@@ -1716,6 +1987,11 @@
     <span>Add me on Discord!</span>
   </div>
   
+  <div class="desktop-icon soundcloud-icon">
+    <img src="https://xdan.uk/uploads/icon6.png">
+    <span>Latest SoundCloud</span>
+  </div>
+  
   <div class="terminal">
     <div class="terminal-titlebar">
       <div class="terminal-title">Terminal - Matrix Rain</div>
@@ -1726,6 +2002,24 @@
       </div>
     </div>
     <div class="terminal-content"></div>
+  </div>
+  
+  <div class="soundcloud-window">
+    <div class="terminal-titlebar">
+      <div class="terminal-title">XDan on SoundCloud</div>
+      <div class="window-controls">
+        <button class="window-button minimize"></button>
+        <button class="window-button maximize"></button>
+        <button class="window-button close"></button>
+      </div>
+    </div>
+    <div class="soundcloud-content">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1991679219&amp;color=%23ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;show_teaser=false"></iframe>
+      <div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;">
+        <a href="https://soundcloud.com/xdanfr" title="XDan" target="_blank" style="color: #cccccc; text-decoration: none;">XDan</a> &#xb7; 
+        <a href="https://soundcloud.com/xdanfr/seasons" title="seasons" target="_blank" style="color: #cccccc; text-decoration: none;">seasons</a>
+      </div>
+    </div>
   </div>
   
   <div class="taskbar">
