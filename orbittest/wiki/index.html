@@ -1,0 +1,696 @@
+<html><head><base href><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>OrbitOS Wiki</title><style>
+:root {
+  --primary: #6e3dc8;
+  --secondary: #2c0464;
+  --accent: #9d4edd;
+  --text: #e9ecef;
+  --background: #0a0015;
+  --sidebar-width: 300px;
+  transition: --primary 0.3s ease-in-out,
+              --secondary 0.3s ease-in-out, 
+              --accent 0.3s ease-in-out,
+              --text 0.3s ease-in-out,
+              --background 0.3s ease-in-out;
+}
+
+:root[data-theme="light"] {
+  --primary: #6e3dc8;
+  --secondary: #2c0464;
+  --accent: #9d4edd;
+  --text: #1a1a1a;
+  --background: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  transition: background-color 0.3s ease-in-out,
+              color 0.3s ease-in-out;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: rgba(44, 4, 100, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.search-box {
+  width: 100%;
+  padding: 0.5rem;
+  background: rgba(110, 61, 200, 0.1);
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.nav-tree {
+  list-style: none;
+}
+
+.nav-item {
+  margin: 0.5rem 0;
+}
+
+.nav-link {
+  color: var(--text);
+  text-decoration: none;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background 0.3s, color 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  background: rgba(110, 61, 200, 0.2);
+}
+
+.nav-link.active {
+  background: var(--primary);
+}
+
+.content {
+  margin-left: var(--sidebar-width);
+  padding: 2rem;
+  flex: 1;
+}
+
+.section {
+  margin-bottom: 3rem;
+  scroll-margin-top: 2rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, var(--accent), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: color 0.3s ease-in-out;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 2rem 0 1rem;
+  color: var(--accent);
+  transition: color 0.3s ease-in-out;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 1rem;
+  color: var(--primary);
+  transition: color 0.3s ease-in-out;
+}
+
+p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.info-box {
+  background: rgba(110, 61, 200, 0.1);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  transition: background-color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out,
+              color 0.3s ease-in-out;
+}
+
+.info-box ol, .info-box ul {
+  margin-left: 1.5rem; 
+  margin-right: 1rem; 
+}
+
+.info-box li {
+  margin: 0.5rem 0;
+  padding-left: 0.5rem; 
+}
+
+ol, ul {
+  padding-left: 2rem; 
+  padding-right: 1rem;
+}
+
+li {
+  padding-left: 0.5rem;
+}
+
+code {
+  background: rgba(110, 61, 200, 0.2);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.command {
+  background: rgba(44, 4, 100, 0.3);
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: monospace;
+  transition: background-color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out,
+              color 0.3s ease-in-out;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.5rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(110, 61, 200, 0.1);
+  transition: background-color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out,
+              color 0.3s ease-in-out;
+}
+
+th, td {
+  padding: 1rem;
+  border: none;
+  border-bottom: 1px solid rgba(110, 61, 200, 0.2);
+  text-align: left;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease-in-out,
+              border-color 0.3s ease-in-out,
+              color 0.3s ease-in-out;
+}
+
+th {
+  background: rgba(110, 61, 200, 0.2);
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 1rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: rgba(110, 61, 200, 0.05);
+}
+
+td:first-child {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.highlight {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.category {
+  font-weight: bold;
+  color: var(--accent);
+  font-size: 1.2em;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  pointer-events: none;
+}
+
+.category:first-child {
+  margin-top: 0;
+}
+
+.theme-toggle {
+  position: absolute;
+  right: 2rem;
+  top: 2.5rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--accent);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "\f186"; /* moon icon */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .4s;
+  font-size: 16px;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+  content: "\f185"; /* sun icon */
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <input type="text" class="search-box" placeholder="Search wiki...">
+  <ul class="nav-tree">
+    <!-- Introduction -->
+    <li class="nav-item category">Introduction</li>
+    <li class="nav-item"><a href="#introduction" class="nav-link">Introduction</a></li>
+    <li class="nav-item"><a href="#key-features" class="nav-link">Key Features</a></li>
+    <li class="nav-item"><a href="#system-requirements" class="nav-link">System Requirements</a></li>
+    <li class="nav-item"><a href="#installation-brief" class="nav-link">Installation Overview</a></li>
+    
+    <!-- Getting Started -->
+    <li class="nav-item category">Getting Started</li>
+    <li class="nav-item"><a href="#installation-guide" class="nav-link">Installation Guide</a></li>
+    <li class="nav-item"><a href="#first-steps" class="nav-link">First Steps</a></li>
+    
+    <!-- Configuration -->
+    <li class="nav-item category">Configuration</li>
+    <li class="nav-item"><a href="#kde-config" class="nav-link">KDE Plasma Configuration</a></li>
+    <li class="nav-item"><a href="#change-de" class="nav-link">Changing Desktop Environment</a></li>
+    <li class="nav-item"><a href="#nvidia-setup" class="nav-link">NVIDIA Setup</a></li>
+    <li class="nav-item"><a href="#amd-setup" class="nav-link">AMD Setup</a></li>
+    <li class="nav-item"><a href="#intel-setup" class="nav-link">Intel Setup</a></li>
+    
+    <!-- Gaming -->
+    <li class="nav-item category">Gaming</li>
+    <li class="nav-item"><a href="#steam-setup" class="nav-link">Steam Setup</a></li>
+    <li class="nav-item"><a href="#proton-guide" class="nav-link">Proton Guide</a></li>
+    <li class="nav-item"><a href="#ge-proton" class="nav-link">GE-Proton Guide</a></li>
+    <li class="nav-item"><a href="#lutris-guide" class="nav-link">Lutris Guide</a></li>
+  </ul>
+</div>
+
+<div class="theme-toggle">
+  <label class="switch">
+    <input type="checkbox" id="theme-switch">
+    <span class="slider round"></span>
+  </label>
+</div>
+
+<div class="content">
+  <!-- Introduction Section -->
+  <section id="introduction" class="section">
+    <h1>OrbitOS Documentation</h1>
+    <div class="info-box">
+      <p>Welcome to the OrbitOS wiki. OrbitOS is a Fedora-based Linux distribution designed for gaming and desktop use, featuring the latest KDE Plasma desktop environment and comprehensive gaming support out of the box.</p>
+      <p>OrbitOS was created with the goal of providing a seamless gaming experience on Linux while maintaining the stability and security that Fedora is known for. Our distribution comes with pre-configured gaming tools and optimizations, making it perfect for both Linux newcomers and experienced users.</p>
+    </div>
+  </section>
+
+  <section id="key-features" class="section">
+    <h2>Key Features</h2>
+    <ul>
+      <li>Based on Fedora 41 with rolling updates</li>
+      <li>KDE Plasma desktop environment with custom OrbitOS theme</li>
+      <li>Pre-configured gaming setup including Steam, Proton, and Lutris</li>
+      <li>Optimized performance for both AMD and NVIDIA GPUs</li>
+      <li>Extensive software repository access through RPM Fusion</li>
+      <li>Custom kernel optimizations for gaming performance</li>
+      <li>Enhanced system responsiveness with custom I/O scheduler</li>
+      <li>Simplified driver management</li>
+      <li>Modern package management with DNF</li>
+    </ul>
+  </section>
+
+  <section id="system-requirements" class="section">
+    <h2>System Requirements</h2>
+    <table>
+      <tr>
+        <th>Component</th>
+        <th>Minimum</th>
+        <th>Recommended</th>
+      </tr>
+      <tr>
+        <td>Processor</td>
+        <td>Dual-core x86_64</td>
+        <td>Quad-core x86_64</td>
+      </tr>
+      <tr>
+        <td>Memory</td>
+        <td>4GB RAM</td>
+        <td>8GB RAM or more</td>
+      </tr>
+      <tr>
+        <td>Storage</td>
+        <td>20GB</td>
+        <td>50GB or more</td>
+      </tr>
+      <tr>
+        <td>Graphics</td>
+        <td>Any modern GPU</td>
+        <td>NVIDIA GTX 1060 / AMD RX 570 or better</td>
+      </tr>
+    </table>
+  </section>
+
+  <section id="installation-brief" class="section">
+    <h2>Installation Overview</h2>
+    <p>Before proceeding with the installation guide, ensure you have the necessary system requirements and a compatible computer. The installation process is straightforward and should not take long.</p>
+    <div class="info-box">
+      <h3>Preparation</h3>
+      <ul>
+        <li>Backup your data if necessary</li>
+        <li>Download the OrbitOS ISO file from the official website</li>
+        <li>Create a bootable USB drive using the downloaded ISO</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Getting Started Section -->
+  <section id="installation-guide" class="section">
+    <h2>Installation Guide</h2>
+    <div class="info-box">
+      <h3>Download Options</h3>
+      <ul>
+        <li>AMD/Intel ISO: <code>orbit-amdgpu-latest.iso</code></li>
+        <li>NVIDIA ISO: <code>orbit-nvidia-latest.iso</code></li>
+      </ul>
+    </div>
+
+    <h3>Installation Media Creation</h3>
+    <ol>
+      <li>Download Rufus, Balena Etcher, or similar USB writing tool</li>
+      <li>Insert a USB drive (minimum 8GB)</li>
+      <li>Select the OrbitOS ISO in your writing tool</li>
+      <li>Write to USB and wait for completion</li>
+    </ol>
+
+    <h3>BIOS/UEFI Setup</h3>
+    <div class="info-box">
+      <p>Before installation, you&apos;ll need to:</p>
+      <ol>
+        <li>Enter BIOS/UEFI (usually F2, F12, or Del during startup)</li>
+        <li>Disable Secure Boot</li>
+        <li>Set boot order to prioritize USB</li>
+        <li>Save changes and exit</li>
+      </ol>
+    </div>
+
+    <h3>Installation Type Selection</h3>
+    <div class="info-box">
+      <h4>Clean Install</h4>
+      <p>Recommended for dedicated gaming machines:</p>
+      <ul>
+        <li>Formats entire drive</li>
+        <li>Maximum performance</li>
+        <li>No complications from existing OS</li>
+      </ul>
+
+      <h4>Dual Boot</h4>
+      <p>For users who need Windows access:</p>
+      <ul>
+        <li>Requires existing free space or partition</li>
+        <li>Minimum 50GB recommended for OrbitOS partition</li>
+        <li>Windows should be installed first</li>
+      </ul>
+    </div>
+
+    <h3>Step-by-Step Installation</h3>
+    <ol>
+      <li>Boot from USB and select &quot;Install OrbitOS&quot;</li>
+      <li>Choose language and keyboard layout</li>
+      <li>Select installation type:
+        <ul>
+          <li>For clean install: &quot;Erase disk and install OrbitOS&quot;</li>
+          <li>For dual boot: &quot;Install alongside existing OS&quot;</li>
+        </ul>
+      </li>
+      <li>If dual booting:
+        <ul>
+          <li>Use the slider to allocate space between systems</li>
+          <li>Ensure at least 50GB for OrbitOS</li>
+          <li>Consider your Windows partition size needs</li>
+        </ul>
+      </li>
+      <li>Set your timezone</li>
+      <li>Create user account:
+        <ul>
+          <li>Choose username (lowercase, no spaces)</li>
+          <li>Set strong password</li>
+          <li>Option to enable automatic login (not recommended)</li>
+        </ul>
+      </li>
+      <li>Review settings and begin installation</li>
+      <li>Wait for installation to complete (~15-20 minutes)</li>
+      <li>Restart when prompted</li>
+      <li>Remove USB drive</li>
+    </ol>
+
+    <div class="info-box">
+      <h3>Post-Installation</h3>
+      <p>After first boot:</p>
+      <ul>
+        <li>Complete initial setup wizard</li>
+        <li>Connect to internet</li>
+        <li>Run system updates</li>
+        <li>Install any additional drivers if needed</li>
+      </ul>
+    </div>
+
+    <div class="command">
+      # Update system after installation<br>
+      sudo dnf update
+    </div>
+  </section>
+
+  <section id="first-steps" class="section">
+    <h2>First Steps</h2>
+    <p>After installing OrbitOS, you&apos;ll be greeted with a login screen. Enter your username and password to log in.</p>
+    <div class="info-box">
+      <h3>Initial Setup</h3>
+      <ul>
+        <li>Update your system: <code>sudo dnf update</code></li>
+        <li>Explore the desktop environment and get familiar with the interface</li>
+        <li>Configure your network settings if necessary</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Configuration Section -->
+  <section id="kde-config" class="section">
+    <h2>KDE Plasma Configuration</h2>
+    <p>OrbitOS ships with a customized KDE Plasma desktop. Here&apos;s how to customize it further:</p>
+    <div class="info-box">
+      <h3>Common Customizations</h3>
+      <ul>
+        <li>Right-click desktop &#x2192; Configure Desktop</li>
+        <li>System Settings &#x2192; Appearance</li>
+        <li>System Settings &#x2192; Window Management</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="change-de" class="section">
+    <h2>Changing Desktop Environment</h2>
+    <p>OrbitOS is designed to work with KDE Plasma, but you can change to other desktop environments if you prefer.</p>
+    <div class="info-box">
+      <h3>Available Desktop Environments</h3>
+      <ul>
+        <li>GNOME</li>
+        <li>XFCE</li>
+        <li>Cinnamon</li>
+      </ul>
+      <p>To install an alternative desktop environment, use the following command: <code>sudo dnf groupinstall &quot;Desktop Environment&quot;</code></p>
+    </div>
+  </section>
+
+  <section id="nvidia-setup" class="section">
+    <h2>NVIDIA Setup</h2>
+    <p>OrbitOS includes the NVIDIA drivers by default. If you need to reinstall or update them:</p>
+    <div class="command">
+      # Reinstall NVIDIA drivers<br>
+      sudo dnf reinstall kernel-modules-nvidia
+    </div>
+    <div class="info-box">
+      <h3>NVIDIA Configuration</h3>
+      <p>You can configure NVIDIA settings using the NVIDIA X Server Settings application.</p>
+    </div>
+  </section>
+
+  <section id="amd-setup" class="section">
+    <h2>AMD Setup</h2>
+    <p>OrbitOS includes the AMD drivers by default. If you need to reinstall or update them:</p>
+    <div class="command">
+      # Reinstall AMD drivers<br>
+      sudo dnf reinstall kernel-modules-amdgpu
+    </div>
+    <div class="info-box">
+      <h3>AMD Configuration</h3>
+      <p>You can configure AMD settings using the AMD Control Center application.</p>
+    </div>
+  </section>
+
+  <section id="intel-setup" class="section">
+    <h2>Intel Setup</h2>
+    <p>OrbitOS includes the Intel drivers by default. If you need to reinstall or update them:</p>
+    <div class="command">
+      # Reinstall Intel drivers<br>
+      sudo dnf reinstall kernel-modules-i915
+    </div>
+    <div class="info-box">
+      <h3>Intel Configuration</h3>
+      <p>You can configure Intel settings using the Intel Graphics Control Panel application.</p>
+    </div>
+  </section>
+
+  <!-- Gaming Section -->
+  <section id="steam-setup" class="section">
+    <h2>Steam Setup</h2>
+    <p>Steam comes pre-installed with OrbitOS, ready to use out of the box. However, if you need to reinstall it for any reason:</p>
+    <div class="command">
+      # Reinstall Steam if needed<br>
+      sudo dnf reinstall steam
+    </div>
+    <div class="info-box">
+      <h3>Initial Configuration</h3>
+      <p>OrbitOS comes with Steam pre-configured for optimal gaming performance. The following features are enabled by default:</p>
+      <ul>
+        <li>Steam Play/Proton enabled for all titles</li>
+        <li>GameMode integration</li>
+        <li>MangoHud support</li>
+        <li>FSR (FidelityFX Super Resolution) support</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="proton-guide" class="section">
+    <h2>Proton Guide</h2>
+    <p>Proton is Valve&apos;s compatibility layer that allows Windows games to run on Linux. OrbitOS includes the latest stable version of Proton.</p>
+    
+    <h3>Using Different Proton Versions</h3>
+    <p>To change Proton versions for a specific game:</p>
+    <ol>
+      <li>Right-click the game in your Steam library</li>
+      <li>Select Properties</li>
+      <li>Click Compatibility</li>
+      <li>Check &quot;Force the use of a specific Steam Play compatibility tool&quot;</li>
+      <li>Select your desired Proton version</li>
+    </ol>
+  </section>
+
+  <section id="ge-proton" class="section">
+    <h2>GE-Proton Guide</h2>
+    <p>GE-Proton (Glorious Eggroll) is a custom Proton build with additional patches and improvements.</p>
+    
+    <div class="info-box">
+      <h3>Installing GE-Proton</h3>
+      <p>OrbitOS includes ProtonUp-Qt for easy GE-Proton installation:</p>
+      <ol>
+        <li>Open ProtonUp-Qt from the application menu</li>
+        <li>Click &quot;Add version&quot;</li>
+        <li>Select &quot;GE-Proton&quot; from the compatibility tool dropdown</li>
+        <li>Choose the latest version</li>
+        <li>Click &quot;Install&quot;</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="lutris-guide" class="section">
+    <h2>Lutris Guide</h2>
+    <p>Lutris is a game manager that supports various gaming platforms and emulators. It comes pre-installed with OrbitOS.</p>
+    
+    <h3>Basic Usage</h3>
+    <ul>
+      <li>Click the &quot;+&quot; button to add games</li>
+      <li>Search for games in the Lutris database</li>
+      <li>Use install scripts for automated setup</li>
+    </ul>
+
+    <div class="info-box">
+      <h3>Running Non-Steam Games</h3>
+      <p>Lutris provides easy installation for:</p>
+      <ul>
+        <li>Epic Games Store</li>
+        <li>GOG Galaxy</li>
+        <li>Battle.net</li>
+        <li>Origin</li>
+        <li>Ubisoft Connect</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script>document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    e.target.classList.add('active');
+    const targetId = e.target.getAttribute('href').substring(1);
+    document.getElementById(targetId).scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('.section');
+  let currentSection = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    if (window.pageYOffset >= sectionTop - 100) {
+      currentSection = section.getAttribute('id');
+    }
+  });
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === `#${currentSection}`) {
+      link.classList.add('active');
+    }
+  });
+});
+const themeSwitch = document.getElementById('theme-switch');
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+themeSwitch.checked = savedTheme === 'light';
+themeSwitch.addEventListener('change', e => {
+  const newTheme = e.target.checked ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+});</script>
+
+</body></html>
