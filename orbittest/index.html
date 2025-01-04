@@ -57,6 +57,22 @@ nav {
     color: var(--accent);
 }
 
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--accent);
+}
+
 .hero {
     height: 100vh;
     display: flex;
@@ -258,6 +274,11 @@ h1 {
             <div class="logo glitch-wrapper">
                 <span class="glitch-text">OrbitOS</span>
             </div>
+            <div class="nav-links">
+                <a href="#download" class="nav-link">Download</a>
+                <a href="#about" class="nav-link">About</a> 
+                <a href="https://xdan.uk/orbittest/wiki" class="nav-link">Wiki</a>
+            </div>
         </div>
     </nav>
 
@@ -270,7 +291,7 @@ h1 {
         </div>
     </section>
 
-    <section class="description-section">
+    <section id="about" class="description-section">
         <h2 class="glitch-wrapper"><span class="glitch-text">A Revolutionary Linux Experience</span></h2>
         
         <p>OrbitOS is a cutting-edge operating system built on the robust foundation of Fedora 41, designed to deliver an exceptional experience for both gamers and those seeking a user-friendly Linux environment. OrbitOS seamlessly combines performance, ease of use, and compatibility, making it the perfect OS for anyone transitioning to Linux, as well as those who demand top-tier performance in gaming and productivity.</p>
@@ -405,6 +426,17 @@ h1 {
     document.querySelector('#download').scrollIntoView({
       behavior: 'smooth'
     });
+  });
+  document.querySelectorAll('.nav-link').forEach(link => {
+    if (link.getAttribute('href').startsWith('#')) {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        document.getElementById(targetId).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    }
   });
 });</script>
 </body></html>
