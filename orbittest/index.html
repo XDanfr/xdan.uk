@@ -1,0 +1,410 @@
+<html><head><base href="."><base target="_blank"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>OrbitOS - The Future of Linux</title><style>
+:root {
+    --primary: #6e3dc8;
+    --secondary: #2c0464;
+    --accent: #9d4edd;
+    --text: #e9ecef;
+    --background: #0a0015;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+body {
+    background: var(--background);
+    color: var(--text);
+    overflow-x: hidden;
+}
+
+.glitch-wrapper {
+    position: relative;
+}
+
+.glitch-text {
+    position: relative;
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+nav {
+    background: rgba(44, 4, 100, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+.nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+h1 {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, var(--accent), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.download-btn {
+    background: linear-gradient(45deg, var(--primary), var(--accent));
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2rem;
+}
+
+.download-btn:hover {
+    transform: scale(1.05);
+}
+
+.download-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.gpu-options {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.gpu-btn {
+    background: rgba(110, 61, 200, 0.1);
+    border: 2px solid var(--primary);
+    color: var(--text);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.gpu-btn:hover {
+    background: var(--primary);
+}
+
+.floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.footer {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(44, 4, 100, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 1;
+}
+
+.footer p {
+    color: var(--text);
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.heart {
+    color: #ff6b6b;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.description-section {
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.description-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    background: linear-gradient(45deg, var(--accent), var(--primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.description-section p {
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.feature-card {
+    background: rgba(110, 61, 200, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    padding: 1.5rem;
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+
+.app-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.app-item {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(110, 61, 200, 0.1);
+    border-radius: 8px;
+}
+
+.app-item:hover {
+    background: rgba(110, 61, 200, 0.2);
+}
+
+.app-icon {
+    color: var(--accent);
+    font-size: 1.5rem;
+}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-content">
+            <div class="logo glitch-wrapper">
+                <span class="glitch-text">OrbitOS</span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="floating-particles" id="particles"></div>
+        <div class="hero-content">
+            <h1 class="glitch-wrapper"><span class="glitch-text">OrbitOS</span></h1>
+            <p class="glitch-wrapper"><span class="glitch-text">The Future of Linux Computing</span></p>
+            <a href="#download" class="download-btn">Download Now</a>
+        </div>
+    </section>
+
+    <section class="description-section">
+        <h2 class="glitch-wrapper"><span class="glitch-text">A Revolutionary Linux Experience</span></h2>
+        
+        <p>OrbitOS is a cutting-edge operating system built on the robust foundation of Fedora 41, designed to deliver an exceptional experience for both gamers and those seeking a user-friendly Linux environment. OrbitOS seamlessly combines performance, ease of use, and compatibility, making it the perfect OS for anyone transitioning to Linux, as well as those who demand top-tier performance in gaming and productivity.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-globe feature-icon"></i>
+                <h3>Name Explanation: OrbitOS</h3>
+                <p>The name reflects our commitment to being the centerpiece of your digital universe, providing a stable and efficient operating system that revolves around your needs.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-gamepad feature-icon"></i>
+                <h3>Gaming Focus</h3>
+                <p>Optimized for gaming with Steam, Proton, and Lutris pre-installed for the best gaming experience on Linux.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-user-shield feature-icon"></i>
+                <h3>User-Friendly</h3>
+                <p>Designed to make Linux accessible to everyone with a polished interface and intuitive controls.</p>
+            </div>
+        </div>
+
+        <h3>Preinstalled Applications</h3>
+        <div class="app-list">
+            <a href="https://store.steampowered.com" class="app-item">
+                <i class="fab fa-steam app-icon"></i>
+                <span>Steam</span>
+            </a>
+            <a href="https://lutris.net" class="app-item">
+                <i class="fas fa-gamepad app-icon"></i>
+                <span>Lutris</span>
+            </a>
+            <a href="https://www.onlyoffice.com" class="app-item">
+                <i class="fas fa-file-word app-icon"></i>
+                <span>OnlyOffice</span>
+            </a>
+            <a href="https://www.mozilla.org/firefox" class="app-item">
+                <i class="fab fa-firefox app-icon"></i>
+                <span>Firefox</span>
+            </a>
+            <a href="https://www.gimp.org" class="app-item">
+                <i class="fas fa-image app-icon"></i>
+                <span>GIMP</span>
+            </a>
+            <a href="https://www.libreoffice.org" class="app-item">
+                <i class="fas fa-file-alt app-icon"></i>
+                <span>LibreOffice</span>
+            </a>
+            <a href="https://wiki.gnome.org/Apps/Rhythmbox" class="app-item">
+                <i class="fas fa-music app-icon"></i>
+                <span>Rhythmbox</span>
+            </a>
+            <a href="https://www.videolan.org" class="app-item">
+                <i class="fas fa-play-circle app-icon"></i>
+                <span>VLC Media Player</span>
+            </a>
+        </div>
+    </section>
+
+    <section id="download" class="download-section">
+        <h2 class="glitch-wrapper"><span class="glitch-text">Select Your GPU Manufacturer</span></h2>
+        <div class="gpu-options">
+            <button class="gpu-btn" onclick="window.location.href=&apos;https://xdan.uk/iso&apos;">AMD / Intel</button>
+            <button class="gpu-btn" onclick="window.location.href=&apos;https://xdan.uk/nvidia-iso&apos;">NVIDIA</button>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>made with <span class="heart">&#x2764;&#xfe0f;</span> by XDan, pwul and sigma</p>
+    </footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () => {
+  particlesJS('particles', {
+    particles: {
+      number: {
+        value: 80,
+        density: {
+          enable: true,
+          value_area: 800
+        }
+      },
+      color: {
+        value: '#6e3dc8'
+      },
+      shape: {
+        type: 'circle'
+      },
+      opacity: {
+        value: 0.5,
+        random: true
+      },
+      size: {
+        value: 3,
+        random: true
+      },
+      line_linked: {
+        enable: true,
+        distance: 150,
+        color: '#9d4edd',
+        opacity: 0.4,
+        width: 1
+      },
+      move: {
+        enable: true,
+        speed: 2,
+        direction: 'none',
+        random: true,
+        straight: false,
+        out_mode: 'out'
+      }
+    }
+  });
+  const glitchTexts = document.querySelectorAll('.glitch-text');
+  function createGlitch(element) {
+    const original = element.textContent;
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    setInterval(() => {
+      if (Math.random() < 0.1) {
+        const pos = Math.floor(Math.random() * original.length);
+        const char = letters[Math.floor(Math.random() * letters.length)];
+        element.textContent = original.substring(0, pos) + char + original.substring(pos + 1);
+        setTimeout(() => {
+          element.textContent = original;
+        }, 100);
+      }
+    }, 50);
+  }
+  glitchTexts.forEach(createGlitch);
+  document.querySelector('.download-btn').addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector('#download').scrollIntoView({
+      behavior: 'smooth'
+    });
+  });
+});</script>
+</body></html>
