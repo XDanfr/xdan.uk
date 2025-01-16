@@ -1,9 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>XDuzz</title>
+<html><head><base href="/" /><title>hi</title><style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: "Comic Sans MS", cursive;
+      flex-direction: column;
+    }
+    
+    #hi {
+      font-size: 120px;
+      position: relative;
+      animation: spin 4s linear infinite, rainbow 2s linear infinite;
+      z-index: 1000;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes rainbow {
+      0% { color: red; }
+      17% { color: orange; }
+      33% { color: yellow; }
+      50% { color: green; }
+      67% { color: blue; }
+      83% { color: indigo; }
+      100% { color: violet; }
+    }
+
+    .particle {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 20px;
+      color: #666;
+      font-size: 16px;
+      z-index: 1000;
+    }
+  </style>
 </head>
 <body>
-  hi
+  <div id="hi">hi</div>
+  <footer>(why did i make this)</footer>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
+  <script>
+    // Background explosions
+    function createExplosion() {
+      const x = Math.random() * window.innerWidth;
+      const y = Math.random() * window.innerHeight;
+      
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { x: x/window.innerWidth, y: y/window.innerHeight },
+        colors: ['#ff0000', '#ffa500', '#ffff00', '#008000', '#0000ff', '#4b0082', '#ee82ee'],
+        scalar: 1.2,
+        gravity: 0.8,
+        drift: 2
+      });
+    }
+
+    // Create explosions periodically (more frequently)
+    setInterval(createExplosion, 800);
+
+    // Initial explosion
+    createExplosion();
+
+    // Add some random bigger explosions
+    setInterval(() => {
+      confetti({
+        particleCount: 300,
+        spread: 160,
+        origin: { x: Math.random(), y: Math.random() },
+        colors: ['#ff0000', '#ffa500', '#ffff00', '#008000', '#0000ff', '#4b0082', '#ee82ee'],
+        scalar: 1.5,
+        gravity: 0.6,
+        drift: 3
+      });
+    }, 2000);
+  </script>
 </body>
 </html>
