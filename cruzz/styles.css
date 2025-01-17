@@ -39,12 +39,21 @@ body {
 }
 
 .reveal-text {
-  animation: fadeInStay 3s ease-in-out 3s forwards;
+  animation: fadeInOut 3s ease-in-out 3s forwards;
 }
 
-.bored-button {
+.product-section {
   opacity: 0;
   animation: fadeIn 2s ease-in-out 6s forwards;
+}
+
+.product-title {
+  font-size: 2.5rem;
+  margin: 2rem 0;
+  text-shadow: 0 0 10px var(--glow-color);
+}
+
+.cta-button {
   display: inline-block;
   padding: 1rem 2rem;
   font-size: 1.5rem;
@@ -53,17 +62,60 @@ body {
   text-decoration: none;
   border-radius: 50px;
   margin: 2rem 0;
-  position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 0 20px var(--glow-color);
 }
 
-.bored-button:hover {
-  transform: translateX(-50%) scale(1.05);
+.cta-button:hover {
+  transform: scale(1.05);
   box-shadow: 0 0 30px var(--glow-color);
+}
+
+.specs-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.spec-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.spec-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.spec-item i {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+}
+
+.pc-visualization {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  box-shadow: 0 0 30px var(--glow-color);
+  transition: transform 0.3s ease;
+}
+
+.pc-visualization:hover {
+  transform: scale(1.02);
+}
+
+.pc-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
 @keyframes fadeInOut {
@@ -73,13 +125,17 @@ body {
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
 }
 
-@keyframes fadeInStay {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-  20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+#confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
 }
