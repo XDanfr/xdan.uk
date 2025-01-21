@@ -39,4 +39,26 @@ document.addEventListener('DOMContentLoaded', () => {
       item.style.transform = 'translateY(0)';
     });
   });
+
+  // Show scroll indicator after delay
+  setTimeout(() => {
+    const scrollIndicator = document.querySelector('.scroll-indicator');
+    scrollIndicator.classList.remove('initially-hidden');
+    
+    // Handle scroll indicator visibility
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+
+      scrollIndicator.classList.add('hidden');
+
+      scrollTimeout = setTimeout(() => {
+        if (window.scrollY === 0) {
+          scrollIndicator.classList.remove('hidden');
+        }
+      }, 150);
+    });
+  }, 8000); // Show 2 seconds after PC section appears
 });
