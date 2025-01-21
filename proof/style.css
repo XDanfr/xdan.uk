@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Comic Neue', cursive;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0000ff, #8000ff, #ff00ff);
+  background-size: 700% 700%;
+  animation: gradientBG 8s ease infinite;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Rainbow sparkles overlay */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 10%),
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.8) 0%, transparent 10%),
+    radial-gradient(circle at 70% 80%, rgba(255,255,255,0.8) 0%, transparent 10%);
+  background-size: 100px 100px;
+  animation: sparkle 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sparkle {
+  0% { background-position: 0 0; }
+  100% { background-position: 100px 100px; }
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.container {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 
+    0 0 20px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(255, 0, 0, 0.3),
+    0 0 40px rgba(0, 255, 0, 0.3),
+    0 0 50px rgba(0, 0, 255, 0.3);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  animation: borderRainbow 3s linear infinite;
+  position: relative;
+}
+
+.container::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 25px;
+  background: linear-gradient(45deg, 
+    rgba(255,0,0,0.5), 
+    rgba(255,165,0,0.5), 
+    rgba(255,255,0,0.5), 
+    rgba(0,255,0,0.5), 
+    rgba(0,0,255,0.5), 
+    rgba(238,130,238,0.5)
+  );
+  z-index: -1;
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+@keyframes borderGlow {
+  0% { transform: rotate(0deg); filter: hue-rotate(0deg); }
+  100% { transform: rotate(360deg); filter: hue-rotate(360deg); }
+}
+
+@keyframes borderRainbow {
+  0% { border-color: red; }
+  16.666% { border-color: orange; }
+  33.333% { border-color: yellow; }
+  50% { border-color: green; }
+  66.666% { border-color: blue; }
+  83.333% { border-color: indigo; }
+  100% { border-color: red; }
+}
+
+.message {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-shadow: 
+    2px 2px 0 rgba(255,0,0,0.2),
+    -2px -2px 0 rgba(0,0,255,0.2);
+}
+
+.rainbow-text {
+  font-size: 4rem;
+  font-weight: bold;
+  background: linear-gradient(to right, 
+    red, orange, yellow, green, blue, violet,
+    red, orange, yellow, green, blue, violet
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 3s linear infinite, spin 3s linear infinite, pulse 1.5s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(180deg); }
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+  100% { background-position: 200% 50%; filter: hue-rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.terminal-hint {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 3s linear infinite;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.challenge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(45deg, 
+    #ff0000, #ff8000, #ffff00, 
+    #00ff00, #0000ff, #ff00ff, 
+    #ff0000);
+  background-size: 300% 300%;
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+  animation: buttonRainbow 3s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.challenge-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  animation: btnShine 3s infinite linear;
+}
+
+@keyframes btnShine {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes buttonRainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.challenge-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 0 10px rgba(255,0,0,0.5),
+    0 0 20px rgba(0,255,0,0.5),
+    0 0 30px rgba(0,0,255,0.5);
+}
+
+.click-icon {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  animation: bounce 1s infinite, rainbow 3s linear infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
