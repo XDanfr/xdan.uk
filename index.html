@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        // Mobile redirect
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            window.location.href = "https://m.xdan.uk";
+        }
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XDan | Professional sigma</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #7db9e8 0%, #1e5799 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px) brightness(1.1) contrast(0.9);
+            -webkit-backdrop-filter: blur(10px) brightness(1.1) contrast(0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
+                        0 0 20px rgba(255, 255, 255, 0.2) inset;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .glass-button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-button {
+            transition: all 0.3s ease;
+        }
+        
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown animation styles */
+        .dropdown-container {
+            transition: height 0.3s ease;
+            overflow: hidden;
+        }
+
+        .dropdown-link {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-bottom: 6px;
+        }
+
+        .dropdown-link.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Shine effect for glass elements... yummy */
+        .glass-card, .glass-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::after, .glass-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
+                      rgba(255,255,255,0.4) 0%, 
+                      rgba(255,255,255,0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .glass-card:hover::after, .glass-button:hover::after {
+            opacity: 0.6;
+        }
+
+        .glass-card:hover::before {
+            animation: glass-reflect 3s infinite;
+        }
+
+        @keyframes glass-reflect {
+            0% { transform: rotate(30deg) translateX(-30%); }
+            50% { transform: rotate(30deg) translateX(30%); }
+            100% { transform: rotate(30deg) translateX(-30%); }
+        }
+        
+        .tag {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .platform-icon {
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            transition: all 0.3s ease;
+        }
+        
+        .platform-icon:hover {
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+            transition: transform 0.5s ease-out;
+            will-change: transform;
+            transform-origin: center;
+            transform: translate(var(--interact-x, 0px), var(--interact-y, 0px));
+        }
+        
+        
+        .clock-digital {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            background: linear-gradient(90deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .suggested-song {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .suggested-song::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://lh3.googleusercontent.com/rNspVah8e0nD0gS9B-qak4LM0u312vVi19x1ZYVCG6tK-FYUaoIgQ7uvflyaVO0wHu4MKROjBVmLOZyR4A=w544-h544-l90-rj');
+            background-size: cover;
+            filter: blur(20px) brightness(0.7);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .song-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .song-info {
+            flex: 1;
+        }
+
+        .song-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .song-album {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .song-artist {
+            font-size: 0.7em;
+            opacity: 0.7;
+        }
+
+        .song-links {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .song-link {
+            font-size: 0.9em;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .song-link:hover {
+            opacity: 1;
+        }
+
+        .glass-card .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .profile-pic {
+            transition: transform 0.3s ease;
+            perspective: 1000px;
+        }
+
+        .profile-pic .relative {
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease;
+        }
+
+        .profile-pic:hover .relative {
+            transform: rotateY(180deg);
+        }
+
+        .profile-pic .fa-user {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .transform-rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="relative overflow-hidden">
+    <!-- Floating bubbles for sigma Frutiger Aero effect -->
+    <div class="bubble" style="width: 100px; height: 100px; top: 10%; left: 5%;"></div>
+    <div class="bubble" style="width: 150px; height: 150px; top: 60%; left: 80%;"></div>
+    <div class="bubble" style="width: 70px; height: 70px; top: 80%; left: 15%;"></div>
+    <div class="bubble" style="width: 120px; height: 120px; top: 30%; left: 70%;"></div>
+    <div class="bubble" style="width: 90px; height: 90px; top: 20%; left: 60%;"></div>
+    <div class="bubble" style="width: 110px; height: 110px; top: 70%; left: 30%;"></div>
+    
+    <div class="container mx-auto px-4 py-8 flex flex-col min-h-screen">
+        <!-- Clock on the left -->
+        <div class="glass-card p-4 w-full md:w-64 mb-4 md:absolute md:left-8 md:top-8">
+            <div class="flex flex-col">
+                <h3 class="text-xl font-semibold mb-3">MY TIME</h3>
+                <div class="glass-card p-3 mb-2 flex flex-col items-center">
+                    <div id="clock" class="text-3xl clock-digital"></div>
+                </div>
+                <div id="date" class="text-sm opacity-80"></div>
+                
+                <div class="glass-card p-3 mt-3 suggested-song">
+                    <img src="https://lh3.googleusercontent.com/rNspVah8e0nD0gS9B-qak4LM0u312vVi19x1ZYVCG6tK-FYUaoIgQ7uvflyaVO0wHu4MKROjBVmLOZyR4A=w544-h544-l90-rj" 
+                         alt="Inertia Album Cover" 
+                         class="song-cover">
+                    <div class="song-info">
+                        <div class="song-title" id="suggested-song-title">&quot;what was she like?&quot;</div>
+                        <div class="song-album">Inertia</div>
+                        <div class="song-artist">XDan</div>
+                        <div class="song-links">
+                            <a href="https://open.spotify.com/album/78eka6uMzuFDFxKFtOCFNt" target="_blank" class="song-link">
+                                <i class="fab fa-spotify"></i>
+                            </a>
+                            <a href="https://music.youtube.com/playlist?list=OLAK5uy_mtt-9nZbDrqslwwEOPfU_b5JKT2dMnbpc" target="_blank" class="song-link">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="https://music.apple.com/us/album/inertia/1811629705" target="_blank" class="song-link">
+                                <i class="fab fa-apple"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main profile content -->
+        <div class="flex flex-col items-center justify-center flex-grow">
+            <!-- Profile picture with flip animation -->
+            <div class="glass-card w-32 h-32 rounded-full mb-6 overflow-hidden profile-pic perspective-1000">
+                <div class="relative w-full h-full transition-transform duration-500 transform-style-preserve-3d">
+                    <img src="https://cdn.discordapp.com/avatars/634780914425004042/781c4148672765fb9d969daf98ba9d37.png" 
+                         alt="Profile Picture" 
+                         class="absolute w-full h-full object-cover rounded-full backface-hidden">
+                    <div class="absolute w-full h-full rounded-full backface-hidden transform-rotate-y-180 bg-white bg-opacity-20 backdrop-blur-md flex items-center justify-center">
+                        <i class="fas fa-user text-5xl text-white"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Name and username -->
+            <h1 class="text-4xl font-bold mb-1">XDan</h1>
+            <p class="text-xl opacity-80 mb-6">@_xdan</p>
+            
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2 mb-8 justify-center">
+                <span class="tag px-4 py-1 text-sm">Producer</span>
+                <span class="tag px-4 py-1 text-sm">Programmer</span>
+                <span class="tag px-4 py-1 text-sm">Video Editor</span>
+            </div>
+            
+            <!-- Discord button -->
+            <a href="https://discord.com/users/634780914425004042" target="_blank" class="glass-button px-6 py-3 mb-8 flex items-center gap-2">
+                <i class="fab fa-discord"></i>
+                <span>Add on Discord</span>
+            </a>
+            
+            <!-- Social buttons -->
+            <div class="flex gap-4 mb-12">
+                <a href="https://discord.gg/splitgate2" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <i class="fab fa-discord"></i>
+                </a>
+                <a href="https://instagram.com/yourfav.dan" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://github.com/XDanfr" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl">
+                    <i class="fab fa-github"></i>
+                </a>
+            </div>
+            
+            <!-- Music platforms -->
+            <div class="text-center mb-8">
+                <h3 class="text-lg font-semibold mb-4">LISTEN TO MY MUSIC</h3>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://xdan.uk/spotify" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl platform-icon">
+                        <i class="fab fa-spotify"></i>
+                    </a>
+                    <a href="https://music.apple.com/artist/xdan/1439635322" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl platform-icon">
+                        <i class="fab fa-apple"></i>
+                    </a>
+                    <a href="#" id="youtube-option" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl platform-icon">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://xdan.uk/sc" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl tilt-effect platform-icon">
+                        <i class="fab fa-soundcloud"></i>
+                    </a>
+                    <a href="https://www.deezer.com/en/artist/11953067" target="_blank" class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-xl tilt-effect platform-icon">
+                        <i class="fab fa-deezer"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Links on the right -->
+    <div class="glass-card p-4 w-full md:w-64 mb-4 md:absolute md:right-8 md:top-8">
+        <div class="flex flex-col">
+            <h3 class="text-xl font-semibold mb-3">Links</h3>
+            <div class="relative">
+                <button id="official-website-btn" class="glass-button px-4 py-2 mb-2 flex items-center gap-2 w-full">
+                    <i class="fas fa-globe"></i>
+                    <span>This website</span>
+                    <i id="dropdown-arrow" class="fas fa-chevron-down ml-auto text-xs opacity-70 transition-transform"></i>
+                </button>
+                <div id="official-links-container" class="dropdown-container hidden h-0 w-full">
+                    <div class="flex flex-col gap-2 pt-1">
+                        <a href="https://xdan.uk/constellations/" target="_blank" class="dropdown-link glass-button px-4 py-2 flex items-center gap-2 text-sm">
+                            <i class="fas fa-star"></i>
+                            <span>Constellations</span>
+                        </a>
+                        <a href="https://xdan.uk/Go11/" target="_blank" class="dropdown-link glass-button px-4 py-2 flex items-center gap-2 text-sm">
+                            <i class="fas fa-dice"></i>
+                            <span>Go11</span>
+                        </a>
+                        <a href="https://xdan.uk/Keyboard/" target="_blank" class="dropdown-link glass-button px-4 py-2 flex items-center gap-2 text-sm">
+                            <i class="fas fa-keyboard"></i>
+                            <span>Keyboard Tester [Abandoned]</span>
+                        </a>
+                        <a href="https://xdan.uk/ram/" target="_blank" class="dropdown-link glass-button px-4 py-2 flex items-center gap-2 text-sm">
+                            <i class="fas fa-memory"></i>
+                            <span>Download more RAM</span>
+                        </a>
+                        <a href="https://xdan.uk/triangles/" target="_blank" class="dropdown-link glass-button px-4 py-2 flex items-center gap-2 text-sm mb-3">
+                            <i class="fas fa-shapes"></i>
+                            <span>Triangles</span>
+                        </a>
+                    </div>
+                </div>
+
+            <a href="https://xdan.co.uk" target="_blank" class="glass-button px-4 py-2 mb-2 flex items-center gap-2">
+                <i class="fas fa-music"></i>
+                <span>Music website</span>
+            </a>
+            <a href="https://xdan.org.uk" target="_blank" class="glass-button px-4 py-2 flex items-center gap-2">
+                <i class="fas fa-film"></i>
+                <span>Editing website</span>
+            </a>
+        </div>
+    </div>
+</div> <div id="youtube-popup" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-filter backdrop-blur-md"></div>
+        <div class="glass-card p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Select Platform</h3>
+                <button id="close-popup" class="glass-button w-8 h-8 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flex flex-col gap-3">
+                <a href="https://youtube.com/@_XDan" target="_blank" class="glass-button px-4 py-3 flex items-center gap-3">
+                    <i class="fab fa-youtube text-red-500"></i>
+                    <span>YouTube</span>
+                </a>
+                <a href="https://music.youtube.com/channel/UCyuot85YYAyEiQi51iZbW6Q" target="_blank" class="glass-button px-4 py-3 flex items-center gap-3">
+                    <i class="fas fa-music text-red-400"></i>
+                    <span>YouTube Music</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Official website dropdown functionality
+        const officialWebsiteBtn = document.getElementById('official-website-btn');
+        const dropdownArrow = document.getElementById('dropdown-arrow');
+        const officialLinksContainer = document.getElementById('official-links-container');
+        const dropdownLinks = document.querySelectorAll('#official-links-container .dropdown-link');
+
+        officialWebsiteBtn.addEventListener('click', () => {
+            const isOpening = officialLinksContainer.classList.contains('hidden');
+            
+            if (isOpening) {
+                // Opening animation
+                officialLinksContainer.classList.remove('hidden');
+                dropdownArrow.classList.add('rotate-180');
+                
+                // Calculate height needed
+                const linksHeight = document.querySelector('#official-links-container > div').scrollHeight;
+                officialLinksContainer.style.height = `${linksHeight}px`;
+                
+                // Animate links with delay
+                dropdownLinks.forEach((link, index) => {
+                    setTimeout(() => {
+                        link.classList.add('show');
+                    }, index * 100 + 200); // 200ms delay + 100ms per item
+                });
+            } else {
+                // Closing animation
+                dropdownLinks.forEach(link => link.classList.remove('show'));
+                officialLinksContainer.style.height = '0';
+                
+                setTimeout(() => {
+                    officialLinksContainer.classList.add('hidden');
+                    dropdownArrow.classList.remove('rotate-180');
+                }, 300);
+            }
+        });
+
+        // YouTube/YTM Popup functionality
+        const youtubeOption = document.getElementById('youtube-option');
+        const youtubePopup = document.getElementById('youtube-popup');
+        const closePopup = document.getElementById('close-popup');
+        const popupContent = youtubePopup.querySelector('.glass-card');
+
+        youtubeOption.addEventListener('click', (e) => {
+            e.preventDefault();
+            youtubePopup.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+                popupContent.style.transform = 'scale(1)';
+                popupContent.style.opacity = '1';
+            }, 10);
+        });
+
+        function closePopupFunc() {
+            popupContent.style.transform = 'scale(0.95)';
+            popupContent.style.opacity = '0';
+            
+            setTimeout(() => {
+                youtubePopup.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        closePopup.addEventListener('click', closePopupFunc);
+
+        // Close popup when clicking outside
+        youtubePopup.addEventListener('click', (e) => {
+            if (e.target === youtubePopup) {
+                closePopupFunc();
+            }
+        });
+
+        // Mouse position tracking for shine effect
+        document.querySelectorAll('.glass-card, .glass-button').forEach(element => {
+            element.addEventListener('mousemove', (e) => {
+                const rect = element.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                element.style.setProperty('--mouse-x', `${x}px`);
+                element.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Clock functionality for BST (British Summer Time)
+        function updateClock() {
+            const clock = document.getElementById('clock');
+            const date = document.getElementById('date');
+            
+            // Get current time in London timezone (automatically handles BST/GMT)
+            const londonTime = new Date().toLocaleString('en-GB', { 
+                timeZone: 'Europe/London',
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            // Format time (HH:MM:SS)
+            clock.textContent = londonTime;
+            
+            // Format date (Day, DD Month YYYY)
+            const dateOptions = { 
+                weekday: 'long', 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric', 
+                timeZone: 'Europe/London' 
+            };
+            date.textContent = new Date().toLocaleDateString('en-GB', dateOptions);
+        }
+        
+        // Update clock immediately and then every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Random suggested song from Inertia album
+        const songs = [
+            "what was she like?",
+            "Euphoria",
+            "Radiowaves",
+            "Drift",
+            "Inertia",
+            "Velocity 2",
+            "Elysium VIP",
+            "you're all i need!",
+            "i need you now!",
+            "Glide",
+            "seasons",
+            "OVERDRIVE",
+            "Pixel Perfect"
+        ];
+
+        function setRandomSong() {
+            const randomIndex = Math.floor(Math.random() * songs.length);
+            let title = songs[randomIndex];
+            if (title === "what was she like?") {
+                title = `"${title}"`;
+            }
+            document.getElementById('suggested-song-title').textContent = title;
+            textContent = songs[randomIndex];
+                    }
+
+        setRandomSong();
+        
+        // Store original positions of bubbles
+        const bubbles = document.querySelectorAll('.bubble');
+        const originalPositions = [];
+        bubbles.forEach(bubble => {
+            originalPositions.push({
+                element: bubble,
+                x: parseFloat(bubble.style.left),
+                y: parseFloat(bubble.style.top)
+            });
+        });
+
+        // Mouse interaction for bubbles
+        document.addEventListener('mousemove', (e) => {
+            bubbles.forEach((bubble) => {
+                const rect = bubble.getBoundingClientRect();
+                const bubbleCenter = {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                };
+                
+                const distance = Math.sqrt(
+                    Math.pow(e.clientX - bubbleCenter.x, 2) + 
+                    Math.pow(e.clientY - bubbleCenter.y, 2)
+                );
+                
+                const maxDistance = 500; // Even more sensitive interaction
+                if (distance < maxDistance) {
+                    const angle = Math.atan2(
+                        bubbleCenter.y - e.clientY,
+                        bubbleCenter.x - e.clientX
+                    );
+                    
+                    const repulsionStrength = 80 * (1 - distance/maxDistance); // Stronger repulsion
+                    const offsetX = Math.cos(angle) * repulsionStrength;
+                    const offsetY = Math.sin(angle) * repulsionStrength;
+                    
+                    bubble.style.setProperty('--interact-x', `${offsetX}px`);
+                    bubble.style.setProperty('--interact-y', `${offsetY}px`);
+                } else {
+                    bubble.style.setProperty('--interact-x', '0px');
+                    bubble.style.setProperty('--interact-y', '0px');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
